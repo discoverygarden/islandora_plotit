@@ -1,0 +1,3 @@
+name = Islandora Plotit 
+description = Islandora plotit integration and json forwarder 
+core = 7.x

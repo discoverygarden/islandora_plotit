@@ -1,0 +1,49 @@
+<?php
+/**
+ * @file
+ * The islandora_scholar moudule.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function islandora_plotit_menu() {
+  return array(
+    '/islandora_plotit/display_page/$1' => array(
+      'title' => 'Scholar',
+      'description' => 'Configure RoMEO and Google Search',
+      'type' => MENU_NORMAL_ITEM,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('islandora_plotit_admin_form'),
+      'access arguments' => array('access administration pages'),
+      'file' => 'includes/admin.form.inc',
+    ),
+  )
+}
+function islandora_plotit_islandora_solr_secondary_display() {
+  return array(
+    'plotit' => array(
+      'name' => t('Plotit host page'),
+      'module' => 'islandora_plotit',
+      'file' => 'includes/plotit_main.inc',
+      'class' => "IslandoraSolrResultsPlotit",
+      'function' => "diplayMainpage",
+      'description' => t("Display plotit host page"),
+      'configuration' => 'admin/islandora/search/islandora_solr_geo',
+    ),
+   'plotit_json' => array(
+      'name' => t('JSON'),
+      'module' => 'islandora_plotit',
+      'file' => 'includes/solr_json.inc',
+      'class' => "IslandoraSolrResultsPlotit",
+      'function' => "displayJSON",
+      'description' => t("Display formatted json results"),
+      'configuration' => 'admin/islandora/search/islandora_solr_geo',
+    ),
+  );
+}
+function islandora_plotit_json_feed($query){
+  
+
+
+}
