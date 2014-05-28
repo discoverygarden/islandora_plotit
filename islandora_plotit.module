@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * The islandora_scholar moudule.
+ * Main hook implementations for islandora_plotit.
  */
 
 /**
@@ -9,41 +9,70 @@
  */
 function islandora_plotit_menu() {
   return array(
-    '/islandora_plotit/display_page/$1' => array(
-      'title' => 'Scholar',
-      'description' => 'Configure RoMEO and Google Search',
-      'type' => MENU_NORMAL_ITEM,
+    'admin/islandora/search/islandora_solr/plotit' => array(
+      'title' => 'PlotIt',
+      'description' => 'Configure Islandora PlotIt.',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('islandora_plotit_admin_form'),
-      'access arguments' => array('access administration pages'),
+      'access arguments' => array('administer islandora solr'),
       'file' => 'includes/admin.form.inc',
-    ),
-  )
-}
-function islandora_plotit_islandora_solr_secondary_display() {
-  return array(
-    'plotit' => array(
-      'name' => t('Plotit host page'),
-      'module' => 'islandora_plotit',
-      'file' => 'includes/plotit_main.inc',
-      'class' => "IslandoraSolrResultsPlotit",
-      'function' => "diplayMainpage",
-      'description' => t("Display plotit host page"),
-      'configuration' => 'admin/islandora/search/islandora_solr_geo',
-    ),
-   'plotit_json' => array(
-      'name' => t('JSON'),
-      'module' => 'islandora_plotit',
-      'file' => 'includes/solr_json.inc',
-      'class' => "IslandoraSolrResultsPlotit",
-      'function' => "displayJSON",
-      'description' => t("Display formatted json results"),
-      'configuration' => 'admin/islandora/search/islandora_solr_geo',
+      'type' => MENU_LOCAL_TASK,
     ),
   );
 }
-function islandora_plotit_json_feed($query){
-  
 
+/**
+ * Implements hook_islandora_solr_secondary_display().
+ */
+function islandora_plotit_islandora_solr_secondary_display() {
+  return array(
+    'plotit' => array(
+      'name' => t('PlotIt'),
+      'module' => 'islandora_plotit',
+      'file' => 'includes/plotit_results.inc',
+      'class' => 'IslandoraSolrResultsPlotit',
+      'function' => 'printResults',
+      'description' => t('Display PlotIt results.'),
+      'logo' => t(
+        '!span_startPlotIt!span_end',
+        array(
+          '!span_start' => '<span class="islandora-plotit-secondary-display">',
+          '!span_end' => '</span>',
+        )
+      ),
+    ),
+    'plotit_json' => array(
+      'name' => t('PlotIt JSON'),
+      'module' => 'islandora_plotit',
+      'file' => 'includes/json_results.inc',
+      'class' => 'IslandoraSolrResultsPlotitJson',
+      'function' => 'printResults',
+      'description' => t('Display formatted PlotIt JSON results.'),
+      'logo' => t(
+        '!span_startPlotIt JSON!span_end',
+        array(
+          '!span_start' => '<span class="islandora-plotit-json-secondary-display">',
+          '!span_end' => '</span>',
+        )
+      ),
+    ),
+  );
+}
 
+/**
+ * Implements hook_theme().
+ */
+function islandora_plotit_theme() {
+  $module_path = drupal_get_path('module', 'islandora_plotit');
+  return array(
+    'islandora_plotit_display_ploitit_solr_results' => array(
+      'path' => "$module_path/theme",
+      'file' => 'theme.inc',
+      'template' => 'islandora-plotit-display-plotit-solr-results',
+      'variables' => array(
+        'solr_results' => NULL,
+        'solr_search' => NULL,
+      ),
+    ),
+  );
 }

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Class override for display on a map.
+ * Class override for display via PlotIt.
  */
 
 /**
@@ -11,18 +11,30 @@
 class IslandoraSolrResultsPlotit extends IslandoraSolrResults {
 
   /**
-   * Renders the Solr results as a json doc for consumption by plotit.
+   * Renders the Solr results via PlotIt.
    *
    * @see IslandoraSolrResults::displayResults()
    *
-   * @param array $solr_results
-   *   The processed Solr results from
-   *   IslandoraSolrQueryProcessor::islandoraSolrResult.
-   *
-   * @return string
-   *   Rendered Solr results.
+   * @global language
    */
-  public function printResults($solr_results) {
-    return theme('islandora_solr_plotit_display_results', $solr_results);
+  public function printResults($solr_query_processor) {
+    global $language;
+    drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
+    drupal_add_http_header('Content-Language', $language->language);
+    $plotit = theme(
+      'islandora_plotit_display_ploitit_solr_results',
+      array('solr_results' => $solr_query_processor)
+    );
+    print theme(
+      'html',
+      array(
+        'page' => array(
+          'page_top' => '',
+          'page_bottom' => '',
+          '#children' => $plotit,
+        ),
+      )
+    );
+    exit();
   }
 }

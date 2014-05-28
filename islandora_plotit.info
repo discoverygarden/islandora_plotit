@@ -1,3 +1,8 @@
-name = Islandora Plotit 
-description = Islandora plotit integration and json forwarder 
+name = Islandora PlotIt
+description = 'Provides Islandora PlotIt integration.'
+dependencies[] = islandora_solr
+dependencies[] = libraries
 core = 7.x
+package = Islandora Search
+version = 7.x-dev
+configure = admin/config/islandora/search/islandora_solr/plotit
