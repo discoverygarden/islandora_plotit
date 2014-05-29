@@ -1,0 +1,16 @@
+/*
+ * @file
+ * CSS lifted from CWRC-Mapping-Tmelines-Project's index.php.
+ */
+.exhibit-slider
+{
+  border: 1px solid #CCC;
+  padding-bottom: 5px;
+  background-color: #E3E6EC;
+}
+.multiGroupEvents
+{
+  width: 300px;
+  height: 100px;
+  overflow: auto;
+}
