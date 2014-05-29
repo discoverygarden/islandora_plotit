@@ -9,7 +9,7 @@
  * Extension of IslandoraSolrResults to create an alternative display type.
  */
 class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
-  protected $json_field_map = NULL;
+  protected $jsonFieldMap = NULL;
 
   /**
    * Constructor.
@@ -18,7 +18,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
     parent::__construct();
 
     module_load_include('inc', 'islandora_plotit', 'includes/utilities');
-    $this->json_field_map = islandora_plotit_get_solr_field_mapping();
+    $this->jsonFieldMap = islandora_plotit_get_solr_field_mapping();
   }
 
   /**
@@ -27,7 +27,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
    * @see IslandoraSolrResults::displayResults()
    */
   public function printResults($solr_query_processor) {
-    $fields = array_unique(array_values($this->json_field_map));
+    $fields = array_unique(array_values($this->jsonFieldMap));
 
     $solr_query_processor->solrLimit = 9999;
     $solr_query_processor->solrParams['fl'] = 'PID ' . implode(' ', $fields);
@@ -35,7 +35,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
     $raw_results = $solr_query_processor->islandoraSolrResult['response']['objects'];
 
     $json_results = array();
-    foreach($raw_results as $result) {
+    foreach ($raw_results as $result) {
       $json_results['items'][] = $this->mapSolrDocToJSON($result['solr_doc']);
     }
     drupal_json_output($json_results);
@@ -54,7 +54,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
    */
   protected function mapSolrDocToJSON($solr_doc) {
     $output = array();
-    foreach (array_intersect($this->json_field_map, array_keys($solr_doc)) as $json_field => $solr_field) {
+    foreach (array_intersect($this->jsonFieldMap, array_keys($solr_doc)) as $json_field => $solr_field) {
       $output[$json_field] = $solr_doc[$solr_field];
     }
     return $output;
