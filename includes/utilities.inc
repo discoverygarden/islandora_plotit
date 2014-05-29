@@ -13,7 +13,7 @@
  */
 function islandora_plotit_get_solr_field_mapping() {
   return variable_get(
-    'islandora_plotit_piont_type_solr_field',
+    'islandora_plotit_solrfields',
     array(
       'label' => 'fgs_label_s',
       'longLabel' => 'fgs_label_s',

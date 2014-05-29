@@ -142,7 +142,7 @@ function islandora_plotit_admin_form($form, &$form_state) {
 function islandora_plotit_admin_form_submit($form, &$form_state) {
   $values = &$form_state['values'];
   variable_set(
-    'islandora_plotit_piont_type_solr_field',
+    'islandora_plotit_solrfields',
     array(
       'label' => $values['label'],
       'longLabel' => $values['longLabel'],
