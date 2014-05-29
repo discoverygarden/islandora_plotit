@@ -14,7 +14,7 @@ function islandora_plotit_preprocess_islandora_plotit_display_ploitit_solr_resul
 
   drupal_add_js("$plotit_library_path/libs/jquery/jquery.min.js");
   $url_prefix = url("$plotit_library_path/", array('absolute' => TRUE));
-  drupal_add_js("Exhibit_urlPrefix='$url_prefix';",array('type' => 'inline'));
+  drupal_add_js("Exhibit_urlPrefix='$url_prefix';", array('type' => 'inline'));
 
   drupal_add_js("$plotit_library_path/libs/simile/exhibit-api.js");
   drupal_add_js("$plotit_library_path/libs/simile/extensions/map/map-extension.js");

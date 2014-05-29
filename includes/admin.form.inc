@@ -17,149 +17,146 @@
  *   The settings form.
  */
 function islandora_plotit_admin_form($form, &$form_state) {
+  module_load_include('inc', 'islandora_plotit', 'includes/utilities');
+  $plotit_solr_mapping = islandora_plotit_get_solr_field_mapping();
 
-  $form['islandora_plotit_label_solr_field'] = array(
+  $form['label'] = array(
     '#type' => 'textfield',
     '#title' => t('Label Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_label_solr_field',
-      'fgs_label_s'
-    ),
+    '#default_value' => $plotit_solr_mapping['label'],
     '#description' => t('Solr field of the label for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_long_label_solr_field'] = array(
+  $form['longLabel'] = array(
     '#type' => 'textfield',
     '#title' => t('Long Label Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_long_label_solr_field',
-      'fgs_label_s'
-    ),
+    '#default_value' => $plotit_solr_mapping['longLabel'],
     '#description' => t('Solr field of the long label for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_ascii_name_solr_field'] = array(
+  $form['asciiName'] = array(
     '#type' => 'textfield',
-    '#title' => t('ASSCII Name Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_ascii_name_solr_field',
-      'fgs_label_s'
-    ),
+    '#title' => t('ASCII Name Field'),
+    '#default_value' => $plotit_solr_mapping['asciiName'],
     '#description' => t('Solr field of the ASSCII name for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_group_solr_field'] = array(
+  $form['group'] = array(
     '#type' => 'textfield',
     '#title' => t('Group Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_group_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['group'],
     '#description' => t('Solr field of the group for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_sub_group_solr_field'] = array(
+  $form['subGroup'] = array(
     '#type' => 'textfield',
     '#title' => t('Sub Group Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_sub_group_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['subGroup'],
     '#description' => t('Solr field of the sub group for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_event_type_solr_field'] = array(
+  $form['eventType'] = array(
     '#type' => 'textfield',
     '#title' => t('Event Type Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_event_type_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['eventType'],
     '#description' => t('Solr field of the event type for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_start_date_solr_field'] = array(
+  $form['startDate'] = array(
     '#type' => 'textfield',
     '#title' => t('Start Date Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_start_date_solr_field',
-      'dc.date'
-    ),
+    '#default_value' => $plotit_solr_mapping['startDate'],
     '#description' => t('Solr field of the start date for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_date_type_solr_field'] = array(
+  $form['dateType'] = array(
     '#type' => 'textfield',
     '#title' => t('Date Type Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_date_type_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['dateType'],
     '#description' => t('Solr field of the date type for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_location_solr_field'] = array(
+  $form['location'] = array(
     '#type' => 'textfield',
     '#title' => t('Location Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_location_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['location'],
     '#description' => t('Solr field of the location for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_lat_long_solr_field'] = array(
+  $form['latLng'] = array(
     '#type' => 'textfield',
     '#title' => t('Lat Long Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_lat_long_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['latLng'],
     '#description' => t('Solr field of the lat long for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_location_type_solr_field'] = array(
+  $form['locationType'] = array(
     '#type' => 'textfield',
     '#title' => t('Location Type Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_location_type_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['locationType'],
     '#description' => t('Solr field of the location type for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_piont_type_solr_field'] = array(
+  $form['pointType'] = array(
     '#type' => 'textfield',
     '#title' => t('Point Type Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_piont_type_solr_field',
-      ''
-    ),
+    '#default_value' => $plotit_solr_mapping['pointType'],
     '#description' => t('Solr field of the point type for PlotIt.'),
     '#required' => TRUE,
   );
 
-  $form['islandora_plotit_description_solr_field'] = array(
+  $form['description'] = array(
     '#type' => 'textfield',
     '#title' => t('Description Field'),
-    '#default_value' => variable_get(
-      'islandora_plotit_description_solr_field',
-      'dc.description'
-    ),
+    '#default_value' => $plotit_solr_mapping['description'],
     '#description' => t('Solr field of the description for PlotIt.'),
     '#required' => TRUE,
   );
 
-  return system_settings_form($form);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Set fields'),
+  );
+
+  return $form;
+}
+/**
+ * Admin form submit handler.
+ *
+ * @param array $form
+ *   The Drupal form.
+ * @param array $form_state
+ *   The Drupal form state.
+ */
+function islandora_plotit_admin_form_submit($form, &$form_state) {
+  $values = &$form_state['values'];
+  variable_set(
+    'islandora_plotit_piont_type_solr_field',
+    array(
+      'label' => $values['label'],
+      'longLabel' => $values['longLabel'],
+      'asciiName' => $values['asciiName'],
+      'group' => $values['group'],
+      'subGroup' => $values['subGroup'],
+      'eventType' => $values['eventType'],
+      'startDate' => $values['startDate'],
+      'dateType' => $values['dateType'],
+      'location' => $values['location'],
+      'latLng' => $values['latLng'],
+      'locationType' => $values['locationType'],
+      'pointType' => $values['pointType'],
+      'description' => $values['description'],
+    )
+  );
 }

@@ -27,7 +27,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
     $raw_results = $solr_query_processor->islandoraSolrResult['response']['objects'];
 
     $json_results = array();
-    foreach($raw_results as $result) {
+    foreach ($raw_results as $result) {
       $json_results['items'][] = $result['solr_doc'];
     }
     drupal_json_output($json_results);

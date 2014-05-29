@@ -10,19 +10,30 @@
  */
 function islandora_plotit_uninstall() {
   $variables = array(
-   'islandora_plotit_label_solr_field',
-   'islandora_plotit_long_label_solr_field',
-   'islandora_plotit_ascii_name_solr_field',
-   'islandora_plotit_group_solr_field',
-   'islandora_plotit_sub_group_solr_field',
-   'islandora_plotit_event_type_solr_field',
-   'islandora_plotit_start_date_solr_field',
-   'islandora_plotit_date_type_solr_field',
-   'islandora_plotit_location_solr_field',
-   'islandora_plotit_lat_long_solr_field',
-   'islandora_plotit_location_type_solr_field',
-   'islandora_plotit_piont_type_solr_field',
-   'islandora_plotit_description_solr_field',
+    'islandora_plotit_solrfields',
   );
   array_walk($variables, 'variable_del');
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function islandora_plotit_requirements() {
+  if (!libraries_get_path('CWRC-Mapping-Timelines-Project')) {
+    $t = get_t();
+    $readme_link = l(
+      $t('README'),
+      drupal_get_path('module', 'islandora_plotit') . '/README.md'
+    );
+    return array(
+      'plotit' => array(
+        'title' => $t('PlotIt'),
+        'description' => $t(
+          'PlotIt is missing, please consult the !readme for installation instructions.',
+          array('!readme' => $readme_link)
+        ),
+        'severity' => REQUIREMENT_ERROR,
+      ),
+    );
+  }
 }
