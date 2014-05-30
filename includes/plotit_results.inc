@@ -21,10 +21,17 @@ class IslandoraSolrResultsPlotit extends IslandoraSolrResults {
     global $language;
     drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
     drupal_add_http_header('Content-Language', $language->language);
-    $plotit = theme(
-      'islandora_plotit_display_ploitit_solr_results',
-      array('solr_results' => $solr_query_processor)
+
+    $params = $solr_query_processor->internalSolrParams;
+    $params = array('solr_profile' => 'plotit_json') + $params;
+    $json_callback = url(
+      ISLANDORA_SOLR_SEARCH_PATH . '/' .
+      islandora_solr_replace_slashes($solr_query_processor->solrQuery),
+      array('query' => $params)
     );
+    $plotit = theme('islandora_plotit_display_ploitit', array(
+      'json_callback_url' => $json_callback,
+    ));
     print theme(
       'html',
       array(

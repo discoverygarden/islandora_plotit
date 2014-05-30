@@ -65,13 +65,12 @@ function islandora_plotit_islandora_solr_secondary_display() {
 function islandora_plotit_theme() {
   $module_path = drupal_get_path('module', 'islandora_plotit');
   return array(
-    'islandora_plotit_display_ploitit_solr_results' => array(
+    'islandora_plotit_display_ploitit' => array(
       'path' => "$module_path/theme",
       'file' => 'theme.inc',
-      'template' => 'islandora-plotit-display-plotit-solr-results',
+      'template' => 'islandora-plotit-display-plotit',
       'variables' => array(
-        'solr_results' => NULL,
-        'solr_search' => NULL,
+        'json_callback_url' => NULL,
       ),
     ),
   );
