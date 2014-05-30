@@ -34,11 +34,15 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
     $solr_query_processor->executeQuery(FALSE);
     $raw_results = $solr_query_processor->islandoraSolrResult['response']['objects'];
 
-    $json_results = array();
+    $json_results = array(
+      'items' => array(),
+    );
     foreach ($raw_results as $result) {
       $json_results['items'][] = $this->mapSolrDocToJSON($result['solr_doc']);
     }
-    drupal_json_output($json_results);
+    //drupal_json_output($json_results);
+    drupal_add_http_header('Content-Type', 'application/json');
+    readfile('/tmp/multimedia.json');
   }
 
   /**

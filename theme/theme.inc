@@ -14,7 +14,7 @@
  *   - json_callback_url: A string containg a URL from which JSON for PlotIt
  *     can ba acquired.
  */
-function template_preprocess_islandora_plotit_display_ploitit(&$variables) {
+function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   module_load_include('inc', 'islandora_solr', 'includes/utilities');
   $module_path = drupal_get_path('module', 'islandora_plotit');
   $plotit_library_path = libraries_get_path('CWRC-Mapping-Timelines-Project');

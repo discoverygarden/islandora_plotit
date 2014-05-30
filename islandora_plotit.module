@@ -8,17 +8,37 @@
  * Implements hook_menu().
  */
 function islandora_plotit_menu() {
-  return array(
-    'admin/islandora/search/islandora_solr/plotit' => array(
-      'title' => 'PlotIt',
-      'description' => 'Configure Islandora PlotIt.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('islandora_plotit_admin_form'),
-      'access arguments' => array('administer islandora solr'),
-      'file' => 'includes/admin.form.inc',
-      'type' => MENU_LOCAL_TASK,
-    ),
+  $items = array();
+
+  $items['admin/islandora/search/islandora_solr/plotit'] = array(
+    'title' => 'PlotIt',
+    'description' => 'Configure Islandora PlotIt.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_plotit_admin_form'),
+    'access arguments' => array('administer islandora solr'),
+    'file' => 'includes/admin.form.inc',
+    'type' => MENU_LOCAL_TASK,
   );
+  $items['islandora/plotit/bookmark-list/%'] = array(
+    'title' => 'JSON Output for bookmark list %id',
+    'title arguments' => array('%id' => 3),
+    'page callback' => 'islandora_plotit_bookmark_list_json',
+    'page arguments' => array(3),
+    'access callback' => 'islandora_bookmark_access',
+    'access arguments' => array(3),
+    'file' => 'includes/bookmark-output.inc',
+  );
+  $items['islandora-bookmark/listid/%/plotit'] = array(
+    'title' => 'View In PlotIt',
+    'page callback' => 'islandora_plotit_bookmark_plotit_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_bookmark_access',
+    'access arguments' => array(2),
+    'file' => 'includes/bookmark-output.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+
+  return $items;
 }
 
 /**
@@ -65,7 +85,7 @@ function islandora_plotit_islandora_solr_secondary_display() {
 function islandora_plotit_theme() {
   $module_path = drupal_get_path('module', 'islandora_plotit');
   return array(
-    'islandora_plotit_display_ploitit' => array(
+    'islandora_plotit_display_plotit' => array(
       'path' => "$module_path/theme",
       'file' => 'theme.inc',
       'template' => 'islandora-plotit-display-plotit',

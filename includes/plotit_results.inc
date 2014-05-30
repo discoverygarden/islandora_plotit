@@ -29,19 +29,12 @@ class IslandoraSolrResultsPlotit extends IslandoraSolrResults {
       islandora_solr_replace_slashes($solr_query_processor->solrQuery),
       array('query' => $params)
     );
-    $plotit = theme('islandora_plotit_display_ploitit', array(
-      'json_callback_url' => $json_callback,
-    ));
-    print theme(
-      'html',
-      array(
-        'page' => array(
-          'page_top' => '',
-          'page_bottom' => '',
-          '#children' => $plotit,
-        ),
-      )
+    $output = array(
+      '#theme_wrappers' => array('html'),
+      '#theme' => 'islandora_plotit_display_plotit',
+      '#json_callback_url' => $json_callback,
     );
+    print drupal_render($output);
     exit();
   }
 }
