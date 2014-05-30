@@ -40,7 +40,7 @@ function islandora_plotit_admin_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('ASCII Name Field'),
     '#default_value' => $plotit_solr_mapping['asciiName'],
-    '#description' => t('Solr field of the ASSCII name for PlotIt.'),
+    '#description' => t('Solr field of the ASCII name for PlotIt.'),
     '#required' => TRUE,
   );
 
