@@ -39,7 +39,7 @@ function islandora_plotit_bookmark_plotit_page($list_id) {
   $output = array(
     '#theme_wrappers' => array('html'),
     '#theme' => 'islandora_plotit_display_plotit',
-    '#json_callback_url' => url("islandora/plotit/bookmark-list/$list_id"),
+    '#json_callback_url' => url("islandora-bookmark/listid/$list_id/plotit_json"),
   );
   print drupal_render($output);
   drupal_exit();

@@ -19,7 +19,7 @@ function islandora_plotit_menu() {
     'file' => 'includes/admin.form.inc',
     'type' => MENU_LOCAL_TASK,
   );
-  $items['islandora/plotit/bookmark-list/%'] = array(
+  $items['islandora-bookmark/listid/%/plotit_json'] = array(
     'title' => 'JSON Output for bookmark list %id',
     'title arguments' => array('%id' => 3),
     'page callback' => 'islandora_plotit_bookmark_list_json',
