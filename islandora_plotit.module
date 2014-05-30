@@ -24,7 +24,7 @@ function islandora_plotit_menu() {
     'title arguments' => array('%id' => 3),
     'page callback' => 'islandora_plotit_bookmark_list_json',
     'page arguments' => array(3),
-    'access callback' => 'islandora_bookmark_access',
+    'access callback' => 'islandora_plotit_bookmark_access',
     'access arguments' => array(3),
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_CALLBACK,
@@ -33,7 +33,7 @@ function islandora_plotit_menu() {
     'title' => 'View PlotIt',
     'page callback' => 'islandora_plotit_bookmark_plotit_page',
     'page arguments' => array(2),
-    'access callback' => 'islandora_bookmark_access',
+    'access callback' => 'islandora_plotit_bookmark_access',
     'access arguments' => array(2),
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_LOCAL_ACTION,
@@ -111,4 +111,11 @@ function islandora_plotit_theme() {
  */
 function islandora_plotit_collection_access(AbstractObject $object) {
   return islandora_object_access(ISLANDORA_VIEW_OBJECTS, $object) && in_array('islandora:collectionCModel', $object->models);
+}
+
+/**
+ * Wrap access callback, if bookmark is not enabled.
+ */
+function islandora_plotit_bookmark_access($list_id) {
+  return module_exists('islandora_bookmark') && islandora_bookmark_access($list_id);
 }
