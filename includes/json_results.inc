@@ -40,9 +40,7 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
     foreach ($raw_results as $result) {
       $json_results['items'][] = $this->mapSolrDocToJSON($result['solr_doc']);
     }
-    //drupal_json_output($json_results);
-    drupal_add_http_header('Content-Type', 'application/json');
-    readfile('/tmp/multimedia.json');
+    drupal_json_output($json_results);
   }
 
   /**
