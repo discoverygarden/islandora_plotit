@@ -4,10 +4,9 @@
  * Islandora PlotIt Solr results template.
  *
  * Variables available:
- * - $solr_search: The Solr search URL for use in the preprocess.
- * - $solr_query_processor: The IslandoraSolrResults class, being passed through for the preprocess.
+ * - $json_callback_url: The Solr search URL for use in the preprocess.
  *
- * @see islandora_plotit_preprocess_islandora_plotit_display_ploitit_solr_results().
+ * @see template_preprocess_islandora_plotit_display_ploitit()
  */
 ?>
 <table id="frame">

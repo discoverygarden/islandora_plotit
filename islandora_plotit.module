@@ -8,17 +8,47 @@
  * Implements hook_menu().
  */
 function islandora_plotit_menu() {
-  return array(
-    'admin/islandora/search/islandora_solr/plotit' => array(
-      'title' => 'PlotIt',
-      'description' => 'Configure Islandora PlotIt.',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('islandora_plotit_admin_form'),
-      'access arguments' => array('administer islandora solr'),
-      'file' => 'includes/admin.form.inc',
-      'type' => MENU_LOCAL_TASK,
-    ),
+  $items = array();
+
+  $items['admin/islandora/search/islandora_solr/plotit'] = array(
+    'title' => 'PlotIt',
+    'description' => 'Configure Islandora PlotIt.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('islandora_plotit_admin_form'),
+    'access arguments' => array('administer islandora solr'),
+    'file' => 'includes/admin.form.inc',
+    'type' => MENU_LOCAL_TASK,
   );
+  $items['islandora-bookmark/listid/%/plotit_json'] = array(
+    'title' => 'JSON Output for bookmark list %id',
+    'title arguments' => array('%id' => 3),
+    'page callback' => 'islandora_plotit_bookmark_list_json',
+    'page arguments' => array(3),
+    'access callback' => 'islandora_plotit_bookmark_access',
+    'access arguments' => array(3),
+    'file' => 'includes/bookmark-output.inc',
+    'type' => MENU_CALLBACK,
+  );
+  $items['islandora-bookmark/listid/%/plotit'] = array(
+    'title' => 'View PlotIt',
+    'page callback' => 'islandora_plotit_bookmark_plotit_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_bookmark_access',
+    'access arguments' => array(2),
+    'file' => 'includes/bookmark-output.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+  $items['islandora/object/%islandora_object/plotit'] = array(
+    'title' => 'View PlotIt',
+    'page callback' => 'islandora_plotit_collection_plotit_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/collection-output.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
 }
 
 /**
@@ -65,14 +95,27 @@ function islandora_plotit_islandora_solr_secondary_display() {
 function islandora_plotit_theme() {
   $module_path = drupal_get_path('module', 'islandora_plotit');
   return array(
-    'islandora_plotit_display_ploitit_solr_results' => array(
+    'islandora_plotit_display_plotit' => array(
       'path' => "$module_path/theme",
       'file' => 'theme.inc',
-      'template' => 'islandora-plotit-display-plotit-solr-results',
+      'template' => 'islandora-plotit-display-plotit',
       'variables' => array(
-        'solr_results' => NULL,
-        'solr_search' => NULL,
+        'json_callback_url' => NULL,
       ),
     ),
   );
+}
+
+/**
+ * Access callback for collection PlotIt view.
+ */
+function islandora_plotit_collection_access(AbstractObject $object) {
+  return islandora_object_access(ISLANDORA_VIEW_OBJECTS, $object) && in_array('islandora:collectionCModel', $object->models);
+}
+
+/**
+ * Wrap access callback, if bookmark is not enabled.
+ */
+function islandora_plotit_bookmark_access($list_id) {
+  return module_exists('islandora_bookmark') && islandora_bookmark_access($list_id);
 }

@@ -6,3 +6,4 @@ core = 7.x
 package = Islandora Search
 version = 7.x-dev
 configure = admin/config/islandora/search/islandora_solr/plotit
+files[] = includes/json_results.inc

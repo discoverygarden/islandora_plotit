@@ -5,9 +5,16 @@
  */
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Prepares variables for islandora_plotit_display_plotit templates.
+ *
+ * Default template: islandora-plotit-display-plotit.tpl.php
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - json_callback_url: A string containg a URL from which JSON for PlotIt
+ *     can ba acquired.
  */
-function islandora_plotit_preprocess_islandora_plotit_display_ploitit_solr_results(&$variables) {
+function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   module_load_include('inc', 'islandora_solr', 'includes/utilities');
   $module_path = drupal_get_path('module', 'islandora_plotit');
   $plotit_library_path = libraries_get_path('CWRC-Mapping-Timelines-Project');
@@ -20,18 +27,9 @@ function islandora_plotit_preprocess_islandora_plotit_display_ploitit_solr_resul
   drupal_add_js("$plotit_library_path/libs/simile/extensions/map/map-extension.js");
   drupal_add_js("$plotit_library_path/libs/simile/extensions/time/time-extension.js");
 
-  // Handle JSON callback.
-  $solr_query_processor = $variables['solr_results'];
-  $params = $solr_query_processor->internalSolrParams;
-  $params = array('solr_profile' => 'plotit_json') + $params;
-  $variables['solr_search'] = url(
-    ISLANDORA_SOLR_SEARCH_PATH . '/' .
-    islandora_solr_replace_slashes($solr_query_processor->solrQuery),
-    array('query' => $params)
-  );
   drupal_add_html_head_link(
     array(
-      'href' => $variables['solr_search'],
+      'href' => $variables['json_callback_url'],
       'rel' => 'exhibit/data',
       'type' => 'application/json',
     )
