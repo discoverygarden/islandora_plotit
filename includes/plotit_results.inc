@@ -35,6 +35,6 @@ class IslandoraSolrResultsPlotit extends IslandoraSolrResults {
       '#json_callback_url' => $json_callback,
     );
     print drupal_render($output);
-    exit();
+    drupal_exit();
   }
 }

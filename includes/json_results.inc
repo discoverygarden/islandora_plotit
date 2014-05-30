@@ -9,7 +9,8 @@
  * Extension of IslandoraSolrResults to create an alternative display type.
  */
 class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
-  protected $jsonFieldMap = NULL;
+  protected $jsonFieldMap;
+  protected $jsonSchema;
 
   /**
    * Constructor.
@@ -19,6 +20,8 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
 
     module_load_include('inc', 'islandora_plotit', 'includes/utilities');
     $this->jsonFieldMap = islandora_plotit_get_solr_field_mapping();
+    $library_path = libraries_get_path('CWRC-Mapping-Timelines-Project');
+    $this->jsonSchema = json_decode(file_get_contents("$library_path/schema_0.2.3.json"));
   }
 
   /**
@@ -57,8 +60,40 @@ class IslandoraSolrResultsPlotitJson extends IslandoraSolrResults {
   protected function mapSolrDocToJSON($solr_doc) {
     $output = array();
     foreach (array_intersect($this->jsonFieldMap, array_keys($solr_doc)) as $json_field => $solr_field) {
-      $output[$json_field] = $solr_doc[$solr_field];
+      $output[$json_field] = $this->matchSchema($json_field, $solr_doc[$solr_field]);
     }
     return $output;
+  }
+
+  /**
+   * Match to the JSON schema PlotIt seems to use.
+   *
+   * @param string $json_field
+   *   The key of the field being being mapped.
+   * @param mixed $value
+   *   Either a string or array as returned from Solr.
+   *
+   * @return mixed
+   *   Either a string or array, as prescribed by PlotIt's schema.
+   */
+  protected function matchSchema($json_field, $value) {
+    $type = $this->jsonSchema->properties->items->properties->{$json_field}->type;
+
+    if ($type == 'array') {
+      if (is_array($value)) {
+        return $value;
+      }
+      else {
+        return array($value);
+      }
+    }
+    elseif (is_array($value)) {
+      // Not an array, but we have multiple values... Let's just throw in the
+      // first.
+      return reset($value);
+    }
+    else {
+      return $value;
+    }
   }
 }
