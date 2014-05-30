@@ -27,15 +27,25 @@ function islandora_plotit_menu() {
     'access callback' => 'islandora_bookmark_access',
     'access arguments' => array(3),
     'file' => 'includes/bookmark-output.inc',
+    'type' => MENU_CALLBACK,
   );
   $items['islandora-bookmark/listid/%/plotit'] = array(
-    'title' => 'View In PlotIt',
+    'title' => 'View PlotIt',
     'page callback' => 'islandora_plotit_bookmark_plotit_page',
     'page arguments' => array(2),
     'access callback' => 'islandora_bookmark_access',
     'access arguments' => array(2),
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_LOCAL_ACTION,
+  );
+  $items['islandora/object/%islandora_object/plotit'] = array(
+    'title' => 'View PlotIt',
+    'page callback' => 'islandora_plotit_collection_plotit_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/collection-output.inc',
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
@@ -94,4 +104,11 @@ function islandora_plotit_theme() {
       ),
     ),
   );
+}
+
+/**
+ * Access callback for collection PlotIt view.
+ */
+function islandora_plotit_collection_access(AbstractObject $object) {
+  return islandora_object_access(ISLANDORA_VIEW_OBJECTS, $object) && in_array('islandora:collectionCModel', $object->models);
 }
