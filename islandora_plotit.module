@@ -21,11 +21,11 @@ function islandora_plotit_menu() {
   );
   $items['islandora-bookmark/listid/%/plotit_json'] = array(
     'title' => 'JSON Output for bookmark list %id',
-    'title arguments' => array('%id' => 3),
+    'title arguments' => array('%id' => 2),
     'page callback' => 'islandora_plotit_bookmark_list_json',
-    'page arguments' => array(3),
+    'page arguments' => array(2),
     'access callback' => 'islandora_plotit_bookmark_access',
-    'access arguments' => array(3),
+    'access arguments' => array(2),
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_CALLBACK,
   );
