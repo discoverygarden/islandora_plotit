@@ -20,8 +20,9 @@
         <small>Search below by choosing a facet or typing keywords. To restart your search, click on "Reset all Filters" above the map.</small>
         <hr />
 
+ 	<p><a id="historicalMapToggle" style="font-size: 11px; font-weight: bold; color: #000;" href="#" onclick="toggleHistoricalMap();">Show Historical Map</a></p>
+
         <div id="exhibit-browse-panel">
-            <p><b>Historical map:</b> <a href="#" onclick="javascript:addOverlay();">Show</a> | <a href="#" onclick="javascript:removeOverlay();">Hide</a></p>
             <b>Search:</b>
             <div ex:role="facet" ex:facetClass="TextSearch"></div>
             <div ex:role="facet" ex:expression=".startDate" ex:facetLabel="Date Slider" ex:facetClass="Slider" ex:horizontal="true" ex:precision="1" ex:histogram="true" ex:width="285px"></div>
