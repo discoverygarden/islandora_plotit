@@ -2,29 +2,84 @@
  * @file
  * JS lifted from CWRC-Mapping-Tmelines-Project's index.php.
  */
-var map;
-var oldMapViewReconstruct = Exhibit.MapView.prototype._reconstruct;
+	var zebraStyler = function(item, database, tr)
+		{
+			if (tr.rowIndex % 2)
+			{
+				tr.style.background = '#eee';
+			}
+			else
+			{
+				tr.style.background = '#ccc';
+			}
+		}
+		
+	function toggleTimeline()
+        {
+            $('#timelineArea').toggle();
+            if ($('#timelineToggle').text() == 'Show Timeline')
+            {
+                $('#timelineToggle').text('Hide Timeline');
+            }
+            else 
+            {
+                $('#timelineToggle').text('Show Timeline');
+            }
+        }
 
-Exhibit.MapView.prototype._reconstruct = function() {
-  oldMapViewReconstruct.call(this);
-  map = this._map;
-  imageBounds2 = new google.maps.LatLngBounds(
-    new google.maps.LatLng(40.69096, -146.816406),
-    new google.maps.LatLng(70.327858, -30.25)
-  );
+        function toggleMap()
+        {
+            $('#mapArea').toggle();
+            if ($('#mapToggle').text() == 'Show Panel')
+            {
+                $('#historicalMapToggle').show();
+                $('#mapToggle').text('Hide Panel');
+            }
+            else 
+            {
+                $('#historicalMapToggle').hide();
+                $('#mapToggle').text('Show Panel');
+            }
+        }
 
-  historicalOverlay2 = new google.maps.GroundOverlay(
-    'img/1849_CA.png',
-    imageBounds2
-  );
-}
+        var map; 
+        var oldMapViewReconstruct = Exhibit.MapView.prototype._reconstruct; 
+        Exhibit.MapView.prototype._reconstruct = function()
+        { 
+            oldMapViewReconstruct.call(this); 
+            map = this._map;
+            
+            var swBound = new google.maps.LatLng(27.87, -181.56);
+			var neBound = new google.maps.LatLng(81.69, -17.58);
+			imageBounds = new google.maps.LatLngBounds(swBound, neBound);
 
-function addOverlay()
-{
-  historicalOverlay2.setMap(map);
-}
+            historicalOverlay = new google.maps.GroundOverlay
+            (
+                'maps/BNA_1854.png',
+                imageBounds
+			);
+        }
 
-function removeOverlay()
-{
-  historicalOverlay2.setMap(null);
-}
+        function addOverlay()
+        {
+            historicalOverlay.setMap(map);
+        }
+
+        function removeOverlay()
+        {
+            historicalOverlay.setMap(null);
+        }        
+
+        function toggleHistoricalMap()
+        {
+            if ($('#historicalMapToggle').text() == 'Show Historical Map')
+            {
+                addOverlay();
+                $('#historicalMapToggle').text('Hide Historical Map')
+            }
+            else
+            {
+                removeOverlay();
+                $('#historicalMapToggle').text('Show Historical Map')
+            }
+        }
