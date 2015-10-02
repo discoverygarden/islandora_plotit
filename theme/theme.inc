@@ -42,6 +42,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
 
   */
 
+  /*
   drupal_add_html_head_link(
     array(
       'href' => $variables['json_callback_url'],
@@ -49,40 +50,38 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
       'type' => 'application/json',
     )
   );
-
-  /*
-  drupal_add_html_head_link(
-    array(
-      'href' => "$plotit_library_path/datasets/multimedia.json", 
-      'rel' => 'cwrc/data',
-      'type' => 'application/json',
-    )
-  );
-
-  drupal_add_html_head_link(
-    array(
-      'href' => "$plotit_library_path/datasets/biblifo.json", 
-      'rel' => 'cwrc/data',
-      'type' => 'application/json',
-    )
-  );
-
-  drupal_add_html_head_link(
-    array(
-      'href' => "$plotit_library_path/datasets/lglc.json", 
-      'rel' => 'cwrc/data',
-      'type' => 'application/json',
-    )
-  );
-
-  drupal_add_html_head_link(
-    array(
-      'href' => "$plotit_library_path/datasets/orlando.json", 
-      'rel' => 'cwrc/data',
-      'type' => 'application/json',
-    )
-  );
    */
+  drupal_add_html_head_link(
+    array(
+      'href' => "/$plotit_library_path/datasets/multimedia.json", 
+      'rel' => 'cwrc/data',
+      'type' => 'application/json',
+    )
+  );
+
+  drupal_add_html_head_link(
+    array(
+      'href' => "/$plotit_library_path/datasets/biblifo.json", 
+      'rel' => 'cwrc/data',
+      'type' => 'application/json',
+    )
+  );
+
+  drupal_add_html_head_link(
+    array(
+      'href' => "/$plotit_library_path/datasets/lglc.json", 
+      'rel' => 'cwrc/data',
+      'type' => 'application/json',
+    )
+  );
+
+  drupal_add_html_head_link(
+    array(
+      'href' => "/$plotit_library_path/datasets/orlando.json", 
+      'rel' => 'cwrc/data',
+      'type' => 'application/json',
+    )
+  );
 
   // PlotIt library CSS used to be in a link.
 //  drupal_add_css("$plotit_library_path/libs/simile/styles/common.css");
