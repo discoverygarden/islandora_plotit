@@ -41,7 +41,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
 
   */
 
-
+/*
   drupal_add_html_head_link(
     array(
       'href' => $variables['json_callback_url'],
@@ -49,6 +49,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
       'type' => 'application/json',
     )
   );
+ */
 
   drupal_add_html_head_link(
     array(
@@ -83,16 +84,16 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   );
 
   // PlotIt library CSS used to be in a link.
-  drupal_add_css("$plotit_library_path/libs/simile/styles/common.css");
-  drupal_add_css("$plotit_library_path/libs/simile/styles/styles.css");
+//  drupal_add_css("$plotit_library_path/libs/simile/styles/common.css");
+//  drupal_add_css("$plotit_library_path/libs/simile/styles/styles.css");
 
-  drupal_add_css("$module_path/css/plotit.css");
-  drupal_add_js("$module_path/js/plotit.js");
+//  drupal_add_css("$module_path/css/plotit.css");
+//  drupal_add_js("$module_path/js/plotit.js");
 
 
 
-  $plotit_library_path_js = "$plotit_library_path/assets/javascripts/";
-  $plotit_library_path_styles = "$plotit_library_path/assets/styles/";
+  $plotit_library_path_js = "$plotit_library_path/assets/javascripts";
+  $plotit_library_path_styles = "$plotit_library_path/assets/styles";
 
   // Styles from - index.html https://github.com/cwrc/CWRC-Mapping-Timelines-Project/blob/f983df6a209f17c9d43d2b0e29ab031019d706e5/index.html
 
@@ -118,6 +119,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_js("http://maps.googleapis.com/maps/api/js?sensor=false");
   drupal_add_js("$plotit_library_path_js/lib/knockout-3.3.0.js");
   drupal_add_js("$plotit_library_path_js/lib/spiderfy.min.js");
+  drupal_add_js("$plotit_library_path_js/lib/noUiSlider.8.0.2/nouislider.min.js");
   drupal_add_js("$plotit_library_path_js/util/network.js");
   drupal_add_js("$plotit_library_path_js/util/transform.js");
   drupal_add_js("$plotit_library_path_js/plot_it.js");
