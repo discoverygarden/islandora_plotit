@@ -10,190 +10,380 @@
  */
 ?>
 
-<table id="frame">
-<tr>
-    <td id="sidebar">
-        <h2>Plot-It</h2>
-        <div ex:role="coordinator" id="bubble-coordinator"></div>
 
-        <b>How to use search</b><br />
-        <small>Search below by choosing a facet or typing keywords. To restart your search, click on "Reset all Filters" above the map.</small>
-        <hr />
+<loading_overlay></loading_overlay>
 
- 	<p><a id="historicalMapToggle" style="font-size: 11px; font-weight: bold; color: #000;" href="#" onclick="toggleHistoricalMap();">Show Historical Map</a></p>
+<section id="sidebar">
+    <header>
+        <a href="/">Plot-It</a>
+    </header>
 
-        <div id="exhibit-browse-panel">
-            <b>Search:</b>
-            <div ex:role="facet" ex:facetClass="TextSearch"></div>
-            <div ex:role="facet" ex:expression=".startDate" ex:facetLabel="Date Slider" ex:facetClass="Slider" ex:horizontal="true" ex:precision="1" ex:histogram="true" ex:width="285px"></div>
-            <div ex:role="facet" ex:expression=".group" ex:facetLabel="Collection" ex:height="3em"></div>
-        </div>
-    </td>
+    <section>
+        <div id="filters">
+            <text_filter params="label: 'Search', placeholder: 'eg. Rocky Mountains'"></text_filter>
 
-    <td id="content">
-        <div class="item" ex:role="lens" style="display: none; overflow: auto; width: 300px; height: 100px;">
-            <!-- Begin popup. If only this is set, it will be used for the map markers too. Can be disabled for timeline, and show on map only as well -->
-			<table cellpadding="2" width="100%" style="font-size: 13px; color: #777; font-family: Arial, Tahoma, Sans-serif;">
-			<tr>
-				<td width="1">
-					<img ex:if-exists=".images" ex:src-content=".images" width="100px" />
-				</td>
-				<td width="1">
-					<iframe width="150" height="150" ex:if-exists=".videos" ex:src-content=".videos" frameborder="0" allowfullscreen></iframe>
-				</td>
-				<td>
-					<div>
-						<span ex:if-exists=".location">
-							<b><small>LOCATION</small></b> <span ex:content=".location"></span><br />
-						</span>
-						<span ex:if-exists=".startDate">
-							<b><small>DATE</small></b> 
-							<span ex:content=".startDate"></span>
-							<span ex:if-exists=".endDate">
-							 <b><small>TO</small></b> <span ex:content=".endDate"></span>
-							</span>
-							<br />
-						</span>
-						<b><small>TITLE</small></b> <span ex:content=".longLabel"></span><br />
-						<b><small>NOTES</small></b> <span ex:content=".description"></span><br />
-						<b><small><a target="_blank" ex:if-exists=".urls" ex:href-content=".urls">MORE INFO</a></small></b> 
-						<b><small><a target="_blank" ex:if-exists=".source" ex:href-content=".source">SOURCE</a></small></b>
-					</div>
-				</td>
-			</tr>
-			</table>
-			<!-- End timeline popup -->
+            <date_filter params="label: 'Date Range'"></date_filter>
+
+
+            <checklist_filter params="label: 'Collection', field: 'group'"></checklist_filter>
+            <checklist_filter params="label: 'Event Type', field: 'eventType'"></checklist_filter>
         </div>
 
-        <div ex:role="coder" ex:coderClass="Color" id="event-colors">
-            <span ex:color="#f00">BIBLIFO</span>
-			<span ex:color="#0f0">OrlandoEvents</span>
-			<span ex:color="#00f">Multimedia</span>
-			<span ex:color="#ff0">PaperSpeaking</span>
-        </div>
+        <hr/>
 
-        <!-- Example for customizing icons without any data manipulations -->
-        <div ex:role="coder" ex:coderClass="Icon" id="event-icons" style="display:none;">
-            <span ex:icon="http://simile.mit.edu/painter/painter?renderer=map-marker&shape=circle&width=15&height=15&pinHeight=5&background=f00">BIBLIFO</span>
-			<span ex:icon="http://simile.mit.edu/painter/painter?renderer=map-marker&shape=circle&width=15&height=15&pinHeight=5&background=0f0">OrlandoEvents</span>
-			<span ex:icon="http://simile.mit.edu/painter/painter?renderer=map-marker&shape=circle&width=15&height=15&pinHeight=5&background=00f">Multimedia</span>
-			<span ex:icon="http://simile.mit.edu/painter/painter?renderer=map-marker&shape=circle&width=15&height=15&pinHeight=5&background=ff0">PaperSpeaking</span>
-        </div>
+        <filter_reset params="label: 'Reset All', filterGroupId: 'filters'"></filter_reset>
+    </section>
 
-        <!-- This sychronizes the showing of popups, i.e. if a map marker is clicked, the popup on the timeline also shows -->
-        <div ex:role="coordinator" id="event"></div>
-        
-        <!-- Begin timeline component -->
-        <div ex:role="view"
-            ex:viewClass="Timeline"
-            ex:label="Timeline"
-            ex:start=".startDate"
-            ex:end=".endDate"
-            ex:bubbleWidth="350"
-            ex:topBandPixelsPerUnit="400"
-            ex:showSummary="false"
-            ex:iconCoder="event-icons"
-            ex:iconKey=".group"
-            ex:timelineHeight="170"
-            ex:selectCoordinator="bubble-coordinator">
-        </div>
-        <!-- End timeline component -->
+    <section>
+        <header>How to use search</header>
+        <p>
+            Search below by choosing a facet or typing keywords. To restart your search, click on "Reset all Filters"
+            above the map.
+        </p>
 
-        <div ex:role="viewPanel">
-            <!-- Begin map popup -->
-			<!-- This controls a custom popup for the map markers. Disabling it causes the same popup to be used for both timeline and map -->
-			<div class="map-lens" ex:role="lens" style="display: none; text-align: left; overflow: auto; width: 300px; height: 100px;">
-				<table cellpadding="2" width="100%">
-				<tr>
-					<td width="1">
-						<img ex:if-exists=".images" ex:src-content=".images" width="100px" />
-					</td>
-					<td width="1">
-						<iframe width="150" height="150" ex:if-exists=".videos" ex:src-content=".videos" frameborder="0" allowfullscreen></iframe>
-					</td>
-					<td>						
-					<div>
-						<span ex:if-exists=".location">
-							<b><small>LOCATION</small></b> <span ex:content=".location"></span><br />
-						</span>
-						<span ex:if-exists=".startDate">
-							<b><small>DATE</small></b> 
-							<span ex:content=".startDate"></span>
-							<span ex:if-exists=".endDate">
-							 <b><small>TO</small></b> <span ex:content=".endDate"></span>
-							</span>
-							<br />
-						</span>
-						<b><small>TITLE</small></b> <span ex:content=".longLabel"></span><br />
-						<b><small>NOTES</small></b> <span ex:content=".description"></span><br />
-						<b><small><a target="_blank" ex:if-exists=".urls" ex:href-content=".urls">MORE INFO</a></small></b>
-						<b><small><a target="_blank" ex:if-exists=".source" ex:href-content=".source">SOURCE</a></small></b>
-					</div>
-					</td>
-				</tr>
-				</table>
-			</div>
-			<!-- End map popup -->
+        <p>
+            <a id="help" href="http://cwrc.ca/Plot-It_Documentation" target="_blank">Help...</a>
+        </p>
+    </section>
 
-            <!-- Begin map control, same map can hold multiple views, only one is needed here -->
-            <div ex:role="view"
-                id="map1"
-                ex:viewClass="MapView"
-                ex:label="Map View"
-                ex:latlng=".latLng"
-                ex:latlngOrder="lnglat"
-                ex:latlngPairSeparator="|"
-                ex:polygon=".polygon"
-                ex:polyline=".polyline"
-                ex:opacity="0.5"
-                ex:borderWidth="4"
-                ex:center="38.479394673276445, -115.361328125"
-                ex:zoom="3"
-                ex:colorCoder="event-colors"
-                ex:colorKey=".group"
-                ex:shapeWidth="20"
-                ex:shapeHeight="20"
-                ex:selectCoordinator="bubble-coordinator">
+    <section>
+        <header>
+            Project team members
+        </header>
+        <p>
+            Jeffery Antoniuk, Brittney Broder, Susan Brown, Michael Brundin, Lisa Dublin, Isobel Grundy, Kathryn
+            Holland, Mihaela Ilovan, Hamman Samuel, <a href="http://tenjin.ca" target="_blank">Tenjin</a>, Kristina
+            Vyskocil, and Willow White
+        </p>
+    </section>
+</section>
+
+<main>
+    <expander params="expandedText: 'Hide Timeline', collapsedText: 'Show Timeline'">
+        <timeline></timeline>
+    </expander>
+
+    <spotlight></spotlight>
+
+    <style>
+        grid .grid-Start,
+        grid .grid-End {
+            white-space: nowrap;
+        }
+    </style>
+    <expander params="expandedText: 'Hide Map', collapsedText: 'Show Map'">
+        <tab_pane>
+            <map data-tab-label="Map View" params="center: '38.479394673276445, -115.361328125',
+                                        zoom: 3,
+                                        colorKey: 'group',
+                                        colors: {BIBLIFO: '#f00', Multimedia: '#0f0', OrlandoEvents: '#00f', LGLC: '#ff0'},
+                                        opacity: '0.5',
+                                        markerWidth: 18,
+                                        markerHeight: 18">
+            </map>
+            <grid data-tab-label="Grid View" params="columns: {'Title': 'longLabel',
+                                        'Collection': 'group',
+                                        'Location': 'location',
+                                        'Start': 'startDate',
+                                        'End': 'endDate'},
+                              initialSortBy: ['group', 'longLabel-za']">
+            </grid>
+        </tab_pane>
+    </expander>
+</main>
+
+
+<!--
+===============================================
+               Component Templates
+===============================================
+-->
+<div id="templates" style="display:none;">
+
+    <!--
+    ===============================================
+                       Spotlight
+    ===============================================
+    -->
+    <template id="spotlight-template">
+        <section data-bind="if: selected() == null, visible: selected() == null">
+            <p class="placeholder">
+                Click an event in the timeline or map to see details
+            </p>
+        </section>
+        <section data-bind="if: selected() != null, visible: selected() != null">
+            <img data-bind="visible: selected().images, src: selected().images"/>
+            <iframe allowfullscreen=true data-bind="visible: selected().videos, src: selected().videos">
+            </iframe>
+            <div>
+                <header>
+                    <span data-bind="if: selected().startDate">
+                        <span data-bind="html: selected().startDate"></span>
+                        <span data-bind="if: selected().endDate">
+                            to
+                            <span data-bind="text: selected().endDate"></span>
+                        </span>
+                    </span>
+                    <span data-bind="if: selected().location">
+                        <span data-bind="html: selected().location"></span>
+                    </span>
+                </header>
+                <section>
+                    <header>
+                        <span data-bind="html: selected().longLabel"></span>
+                    </header>
+                    <span data-bind="html: selected().description"></span>
+
+                    <p data-bind="if: selected().urls">
+                        <a target="_blank" data-bind="href: selected().urls">More...</a>
+                    </p>
+
+                    <p data-bind="if: selected().source">
+                        <a target="_blank" data-bind="href: selected().source">(Source)</a>
+                    </p>
+                </section>
             </div>
-            <!-- End map control -->
+        </section>
+    </template>
 
-            <!-- Begin data details -->
-            <div ex:role="view"
-                ex:viewClass=""
-                ex:label="List View"
-                ex:columns=".label, .group, .location, .startDate, .endDate"
-                ex:columnLabels="Title, Collection, Location, Start, End"
-                ex:sortAscending="false">
+    <!--
+    ===============================================
+                      Timeline
+    ===============================================
+    -->
+    <template id="timeline-template">
+        <section>
+            <div>
+                <span data-bind="text: unplottableCount"></span>
+                of
+                <span data-bind="text: CWRC.rawData().length"></span>
+                lack time data
+            </div>
+        </section>
+        <div data-bind="event: { mousedown: dragStart, touchstart: dragStart }">
+            <section id="timeline-viewport" data-bind="event: {wheel: scroll}">
+                <div class="canvas" data-bind="foreach: timelineRows,
+                                                           style: {
+                                                                    width: canvasWidth,
+                                                                    transform: zoomTransform,
+                                                                    '-ms-transform': zoomTransform,
+                                                                    '-webkit-transform': zoomTransform,
+                                                                    transformOrigin: transformOrigin,
+                                                                    '-ms-transform-origin': transformOrigin,
+                                                                    '-webkit-transform-origin': transformOrigin
+                                                                  }">
+                    <div class="row" data-bind="foreach: $data">
+                        <a href="#" class="event" data-bind="css: { selected: $parents[1].isSelected($data) },
+                                                             style: {
+                                                                        left: $parents[1].getPinInfo($data).xPos,
+                                                                        width: $parents[1].getPinInfo($data).width,
+                                                                        color: $data.endDate ? 'red' : 'black'
+                                                                    },
+                                                             event: {mouseup: $parents[1].recordMouseUp, mousedown: $parents[1].recordMouseDown}">
+                            <span data-bind="text: $data.startDate"></span>
+                            <span data-bind="html: $data.label"></span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <!-- Ruler disabled until further production available
+                        <section id="timeline-ruler">
+                            <div data-bind="foreach: years,
+                                            style: {
+                                                        width: canvasWidth,
+                                                        transform: rulerTransform
+                                                    }">
+                                <div data-bind="text: $data,
+                                                style: {
+                                                         left: $parent.labelPosition($data),
+                                                         width: $parent.labelSize - $parent.lineThickness,
+                                                        'border-left-width': $parent.lineThickness
+                                                }"></div>
+                            </div>
+                        </section>-->
+        </div>
+        <!-- debug zoom location -->
+        <div id="zoomPoint"
+             style="display:none; background:red; width: 4px; height:4px; position: absolute; pointer-events: none;"></div>
+    </template>
 
-                <table style="display: none;">
-                <tr>
-                    <td><b ex:content=".label"></b></td>
-                    <td><span ex:content=".group"></span></td>
-                    <td><span ex:content=".location"></span></td>
-                    <td><span ex:content=".startDate"></span></td>
-                    <td><span ex:if-exists=".endDate" ex:content=".endDate"></span></td>
-                </tr>
-                </table>
+
+    <!--
+    ===============================================
+                         Grid
+    ===============================================
+    -->
+    <template id="grid-template">
+        <div id="gridSorting">
+            Sort <span data-bind="visible: sortContexts().length > 0">by</span>
+            <!-- Building a "widget" for editing each sorting context-->
+            <div data-bind="foreach: sortContexts">
+                <div>
+                    <select data-bind="options: $parent.allFields, optionsText: 'name', optionsValue: 'name', optionsCaption:'Choose...', value: $data.name"></select>
+                    <a href="#"
+                       data-bind="click: function() { $data.reverse() }, text: $data.getFieldDirectionLabel()"></a>
+                    <a href="#" data-bind="click: function() { $parent.removeSortBy($data) }">x</a>
+                </div>
             </div>
 
-            <!-- Begin tabular details -->
-            <div ex:role="view"
-                ex:viewClass="Tabular"
-                ex:label="Grid View"
-                ex:columns=".label, .group, .location, .startDate, .endDate"
-                ex:columnLabels="Title, Collection, Location, Start, End"
-                ex:sortAscending="false">
-                <table style="display: none;">
-                <tr>
-                    <td><b ex:content=".label"></b></td>
-                    <td><span ex:content=".group"></span></td>
-                    <td><span ex:content=".location"></span></td>
-                    <td><span ex:content=".startDate"></span></td>
-                    <td><span ex:if-exists=".endDate" ex:content=".endDate"></span></td>
-                </tr>
-                </table>
+            <a href="#" title="Add Sorting Rule" data-bind="click: addContext ">by...</a>
+        </div>
+
+        <table>
+            <!-- explicit thead & tbody are important, otherwise the browser assumes incorrect things-->
+            <thead>
+            <tr>
+                <th></th>
+                <!-- ko foreach: Object.keys(columns) -->
+                <th data-bind="text: $data">
+                </th>
+                <!-- /ko -->
+            </tr>
+            </thead>
+            <tbody data-bind="foreach: {data: itemsOnCurrentPage, as: 'item'}">
+            <tr data-bind="">
+                <td>
+                    <a href="#" data-bind="click: function(){ CWRC.selected(item)}">
+                        Select
+                    </a>
+                </td>
+
+                <!-- ko foreach: {data: Object.keys($parent.columns), as: 'columnLabel'} -->
+                <td data-bind="html: item[$parents[1].columns[columnLabel]] || 'n/a', css: $parents[1].getColumnClass(columnLabel)">
+                </td>
+                <!-- /ko -->
+            </tr>
+            </tbody>
+        </table>
+
+        <section data-bind="visible: maxPageIndex() > 1">
+           <span data-bind="visible: isFarAway(1)">
+                <a href="#"
+                   data-bind="text: 1, click: function(){ setPage(1) }, attr: {selected: currentPageIndex() == 1}"></a>
+                <span data-bind="visible: isFarAway(2)">
+                    ...
+                </span>
+           </span>
+           <span data-bind="foreach: pageNeighbourhood">
+                <a href="#"
+                   data-bind="text: $data, click: function(){ $parent.setPage($data) }, attr: {selected: $parent.currentPageIndex() == $data}"></a>
+           </span>
+           <span data-bind="visible: isFarAway(maxPageIndex())">
+                <span data-bind="visible: isFarAway(maxPageIndex() - 1)">
+                    ...
+                </span>
+                <a href="#"
+                   data-bind="text: maxPageIndex, click: function(){ setPage(maxPageIndex()) }, attr: {selected: currentPageIndex() == maxPageIndex()}"></a>
+           </span>
+        </section>
+    </template>
+
+
+    <!--
+    ===============================================
+                        Map
+    ===============================================
+    -->
+    <template id="map-template">
+        <section>
+            <div class="unplottable">
+                <span data-bind="text: unplottableCount"></span>
+                of
+                <span data-bind="text: CWRC.rawData().length"></span>
+                lack map data
+            </div>
+        </section>
+        <div id="historicalMapControls" title="Click to toggle the historical map">
+            <label>
+                <input type="checkbox" data-bind="checked: showHistoricalMap">
+                <span>Historical Map</span>
+            </label>
+            <label id="historicalOpacityControls" data-bind="visible: showHistoricalMap">
+                <span>Opacity</span>
+                <input id="historicalMapOpacity" type="range" min="0.0" max="1.0" step="0.05"
+                       data-bind="value: historicalMapOpacity"/>
+            </label>
+        </div>
+        <!-- identifying by ID does limit to one map per page, but that works for now -->
+        <div id="map_canvas">
+        </div>
+        <section data-bind="visible: colorMap.hasMapping()">
+            <header>Legend</header>
+            <!-- ko foreach: colorMap.getLegendPairs() -->
+            <div>
+                <img data-bind="src: $data.icon"></span>
+                <span data-bind="text: $data.name"></span>
+            </div>
+            <!-- /ko -->
+        </section>
+    </template>
+
+    <!--
+    ===============================================
+                      Tab Pane
+    ===============================================
+    -->
+    <template id="tab-pane-template">
+        <header>
+            <form data-bind="foreach: views">
+                <label>
+                    <input type="radio" name="tabset" data-bind="checked: $parent.currentView,
+                                                             value: $index()"/>
+                    <span data-bind="text: $parent.tabName($data, $index())"></span>
+                </label>
+            </form>
+        </header>
+        <div data-bind="foreach: views">
+            <div data-bind="visible: $parent.isView($index()), template: {nodes: [$data]}">
             </div>
         </div>
-    </td>
-</tr>
-</table>
+    </template>
+
+    <!--
+    ===============================================
+                     Error Status
+    ===============================================
+    -->
+    <template id="status-template">
+        <div data-bind="visible: hasMessages()">
+            <section data-bind="visible: notices().length > 0">
+                <ul>
+                    <!-- ko foreach: notices() -->
+                    <li>
+                        <span data-bind="text: $data"></span>
+                        <a href="#" data-bind="visible: $parent.dismissable,
+                                                           click: function(){ $parent.notices.splice($index(), 1)}">X</a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </section>
+            <section data-bind="visible: warnings().length > 0">
+                <header>Warning</header>
+                <p data-bind="text: warningFlavour(), visible: warningFlavour()"></p>
+                <ul>
+                    <!-- ko foreach: warnings() -->
+                    <li>
+                        <span data-bind="text: $data"></span>
+                        <a href="#" data-bind="visible: $parent.dismissable,
+                                                           click: function(){ $parent.warnings.splice($index(), 1)}">X</a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </section>
+            <section data-bind="visible: errors().length > 0">
+                <ul>
+                    <!-- ko foreach: errors() -->
+                    <li>
+                        <span data-bind="text: $data"></span>
+                        <a href="#" data-bind="visible: $parent.dismissable,
+                                                           click: function(){ $parent.errors.splice($index(), 1)}">X</a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </section>
+        </div>
+    </template>
+
+</div>
+
+
