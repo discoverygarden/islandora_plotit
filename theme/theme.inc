@@ -19,6 +19,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   $module_path = drupal_get_path('module', 'islandora_plotit');
   $plotit_library_path = libraries_get_path('CWRC-Mapping-Timelines-Project');
 
+  /*
   drupal_add_html_head(
     array(
       '#tag' => 'meta',
@@ -27,7 +28,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
         )
       )
     );
-
+   */
 
   /*
     * unsure is required
@@ -41,16 +42,15 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
 
   */
 
-/*
   drupal_add_html_head_link(
     array(
       'href' => $variables['json_callback_url'],
-      'rel' => 'exhibit/data',
+      'rel' => 'cwrc/data',
       'type' => 'application/json',
     )
   );
- */
 
+  /*
   drupal_add_html_head_link(
     array(
       'href' => "$plotit_library_path/datasets/multimedia.json", 
@@ -82,6 +82,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
       'type' => 'application/json',
     )
   );
+   */
 
   // PlotIt library CSS used to be in a link.
 //  drupal_add_css("$plotit_library_path/libs/simile/styles/common.css");
