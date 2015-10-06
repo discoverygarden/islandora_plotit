@@ -1,0 +1,33 @@
+/*
+ * @file
+ * CSS for the Plot-It integration
+ */
+
+/*
+body > main > expander:nth-child(4) > div > tab_pane
+, 
+body > main > expander:nth-child(4) > div > tab_pane > div
+, 
+body > main > expander:nth-child(4) > div > tab_pane > div > div:nth-child(1) > map
+,
+*/
+tab_pane > div > div:nth-child(1)
+{
+  /* 
+   */
+  height: 500px !important;
+}
+
+#map_canvas
+{
+  /* 
+   height: 500px !important; 
+   */
+}
+
+body
+{
+  /* 
+  min-height: 100% !important;
+   */
+}
