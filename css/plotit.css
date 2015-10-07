@@ -13,21 +13,32 @@ body > main > expander:nth-child(4) > div > tab_pane > div > div:nth-child(1) > 
 */
 tab_pane > div > div:nth-child(1)
 {
-  /* 
-   */
   height: 500px !important;
 }
 
+/* 
 #map_canvas
 {
-  /* 
    height: 500px !important; 
-   */
 }
+*/
 
-body
+/*
+ * experiment: 
+ * didn't seem to help
+ * references:
+ *   http://econym.org.uk/gmap/basic19.htm
+ *   http://stackoverflow.com/questions/16349476/map-isnt-showing-on-google-maps-javascript-api-v3-when-nested-in-a-div-tag
+html, body
 {
-  /* 
-  min-height: 100% !important;
-   */
+  height: 100% !important;
 }
+*/
+
+
+/* 
+html, body
+{
+  min-height: 100% !important;
+}
+*/
