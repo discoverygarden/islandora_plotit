@@ -10,7 +10,6 @@
  */
 ?>
 
-
 <loading_overlay></loading_overlay>
 
 <section id="sidebar">
@@ -161,16 +160,13 @@
             </div>
         </section>
         <div data-bind="event: { mousedown: dragStart, touchstart: dragStart }">
-            <section id="timeline-viewport" data-bind="event: {wheel: scroll}">
+            <section id="timeline-viewport" data-bind="event: {wheel: scrollHandler}">
                 <div class="canvas" data-bind="foreach: timelineRows,
                                                            style: {
                                                                     width: canvasWidth,
                                                                     transform: zoomTransform,
                                                                     '-ms-transform': zoomTransform,
-                                                                    '-webkit-transform': zoomTransform,
-                                                                    transformOrigin: transformOrigin,
-                                                                    '-ms-transform-origin': transformOrigin,
-                                                                    '-webkit-transform-origin': transformOrigin
+                                                                    '-webkit-transform': zoomTransform
                                                                   }">
                     <div class="row" data-bind="foreach: $data">
                         <a href="#" class="event" data-bind="css: { selected: $parents[1].isSelected($data) },
@@ -202,9 +198,6 @@
                             </div>
                         </section>-->
         </div>
-        <!-- debug zoom location -->
-        <div id="zoomPoint"
-             style="display:none; background:red; width: 4px; height:4px; position: absolute; pointer-events: none;"></div>
     </template>
 
 
@@ -385,5 +378,3 @@
     </template>
 
 </div>
-
-

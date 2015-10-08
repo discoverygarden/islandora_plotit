@@ -40,9 +40,8 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_js("$plotit_library_path/libs/simile/extensions/map/map-extension.js");
   drupal_add_js("$plotit_library_path/libs/simile/extensions/time/time-extension.js");
 
-  */
+   */
 
-  /*
   drupal_add_html_head_link(
     array(
       'href' => $variables['json_callback_url'],
@@ -50,7 +49,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
       'type' => 'application/json',
     )
   );
-   */
+
   drupal_add_html_head_link(
     array(
       'href' => "/$plotit_library_path/datasets/multimedia.json", 
@@ -83,7 +82,6 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
     )
   );
 
-
   // theme styling - local to islandora integration
   drupal_add_css("$module_path/css/plotit.css");
 
@@ -113,6 +111,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
 
 
   drupal_add_js("$plotit_library_path_js/lib/knockout-3.3.0.js");
+  drupal_add_js("$plotit_library_path_js/lib/knockout-mapping-2.0.min.js");
   drupal_add_js("http://maps.googleapis.com/maps/api/js?sensor=false");
   drupal_add_js("$plotit_library_path_js/lib/spiderfy.min.js");
   drupal_add_js("$plotit_library_path_js/lib/noUiSlider.8.0.2/nouislider.min.js");
