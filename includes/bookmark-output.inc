@@ -1,8 +1,6 @@
 <?php
 
 define('ISLANDORA_PLOTIT_MAX_RESULTS', 10000);
-//define('ISLANDORA_PLOTIT_XQUERY_ID', 'test3.xq');
-define('ISLANDORA_PLOTIT_XQUERY_ID', 'cwrc_plot_it_json.xq');
 
 /**
  * @file
@@ -74,7 +72,7 @@ function islandora_plotit_bookmark_list_xmldb_json($list_id) {
 }
 
 /**
- * PlotIt page, showing a results from a bookmark list via an XML DB.
+ * Plot-It page, showing a results from a bookmark list via an XML DB.
  *
  * @param string $list_id
  *   The ID of a bookmark list.

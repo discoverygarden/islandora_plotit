@@ -40,7 +40,8 @@ function islandora_plotit_menu() {
   );
   $items['islandora/object/%islandora_object/plotit'] = array(
     'title' => 'View PlotIt',
-    'page callback' => 'islandora_plotit_collection_plotit_page',
+    //'page callback' => 'islandora_plotit_collection_plotit_page',
+    'page callback' => 'islandora_plotit_collection_plotit_xmldb_page',
     'page arguments' => array(2),
     'access callback' => 'islandora_plotit_collection_access',
     'access arguments' => array(2),
@@ -50,7 +51,7 @@ function islandora_plotit_menu() {
 
 
   // 2015-10-07 - XML DB integrated versions
-  // main link to Plot-It given a list of bookmark items
+  // bookmark: main link to Plot-It given a list of bookmark items
   $items['islandora-bookmark/listid/%/plotit_xmldb'] = array(
     'title' => 'View PlotIt',
     'page callback' => 'islandora_plotit_bookmark_plotit_xmldb_page',
@@ -60,7 +61,7 @@ function islandora_plotit_menu() {
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_LOCAL_ACTION,
   );
-  // callback from the above menu items that produces the JSON 
+  // bookmark: callback from the above menu items that produces the JSON 
   $items['islandora-bookmark/listid/%/plotit_xmldb_json'] = array(
     'title' => 'JSON Output for bookmark list %id',
     'title arguments' => array('%id' => 2),
@@ -71,6 +72,19 @@ function islandora_plotit_menu() {
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_CALLBACK,
   );
+  // collection: callback from the above menu items that produces the JSON 
+  $items['islandora-collection/object/%islandora_object/plotit_xmldb_json'] = array(
+    'title' => 'JSON Output for collection %id',
+    'title arguments' => array('%id' => 2),
+    'page callback' => 'islandora_plotit_collection_plotit_xmldb_json',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/collection-output.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+
 
 
   return $items;

@@ -22,3 +22,40 @@ function islandora_plotit_collection_plotit_page(AbstractObject $object) {
     ),
   ));
 }
+
+
+
+
+/**
+ * JSON output callback for bookmark lists via an XML DB.
+ *
+ * @param string $object_id
+ *   The ID of a Fedora Object.
+ */
+function islandora_plotit_collection_plotit_xmldb_json($object_id) {
+  module_load_include('inc', 'islandora_cwrc_basexdb', 'includes/xmldb_endpoints');
+  drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
+
+  $json_results = "";
+  if ($object_id) {
+    $pidKeyValue = array("COLLECTION_LIST" => '"'.$object_id.'")');
+    $json_results = islandora_cwrc_exec_xquery(ISLANDORA_PLOTIT_XQUERY_ID, $pidKeyValue);
+  }
+  echo $json_results;
+}
+
+
+/**
+ * Build a XML DB query to find collections, and redirect to it.
+ */
+function islandora_plotit_collection_plotit_xmldb_page(AbstractObject $object) {
+  $output = array(
+    '#theme_wrappers' => array('html'),
+    '#theme' => 'islandora_plotit_display_plotit',
+    '#json_callback_url' => url("islandora-collection/object/$object->id/plotit_xmldb_json"),
+  );
+  print drupal_render($output);
+  drupal_exit();
+}
+
+
