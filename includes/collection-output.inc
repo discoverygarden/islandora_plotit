@@ -38,7 +38,7 @@ function islandora_plotit_collection_plotit_xmldb_json($object_id) {
 
   $json_results = "";
   if ($object_id) {
-    $pidKeyValue = array("COLLECTION_LIST" => '"'.$object_id.'")');
+    $pidKeyValue = array("PID_COLLECTION" => "info:fedora/$object_id");
     $json_results = islandora_cwrc_exec_xquery(ISLANDORA_PLOTIT_XQUERY_ID, $pidKeyValue);
   }
   echo $json_results;
