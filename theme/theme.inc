@@ -42,6 +42,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
 
    */
 
+  /* Javascript callback to the server */
   drupal_add_html_head_link(
     array(
       'href' => $variables['json_callback_url'],
@@ -50,6 +51,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
     )
   );
 
+  /* 2015-10-13 - test data */
   drupal_add_html_head_link(
     array(
       'href' => "/$plotit_library_path/datasets/multimedia.json", 
@@ -81,6 +83,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
       'type' => 'application/json',
     )
   );
+
 
   // theme styling - local to islandora integration
   drupal_add_css("$module_path/css/plotit.css");
