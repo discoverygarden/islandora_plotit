@@ -83,6 +83,7 @@
             <grid data-tab-label="Grid View" params="columns: {'Title': 'longLabel',
                                         'Collection': 'group',
                                         'Location': 'location',
+                                        'Lat/Lng': 'latLng',
                                         'Start': 'startDate',
                                         'End': 'endDate'},
                               initialSortBy: ['group', 'longLabel-za']">
