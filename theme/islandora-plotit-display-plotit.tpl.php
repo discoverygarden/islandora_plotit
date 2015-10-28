@@ -127,6 +127,9 @@
                     <span data-bind="if: selected().location">
                         <span data-bind="html: selected().location"></span>
                     </span>
+                    <span data-bind="if: selected().link">
+                        <a data-bind="html: 'link' , attr: { href: selected().link}"></a>
+                    </span>
                 </header>
                 <section>
                     <header>
