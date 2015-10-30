@@ -110,6 +110,10 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_css("$plotit_library_path_styles/components/loading.css");
   drupal_add_css("$plotit_library_path_js/lib/noUiSlider.8.0.2/nouislider.min.css");
 
+// content formatting
+  drupal_add_css("$plotit_library_path_styles/content/orlando.css");
+  drupal_add_css("$plotit_library_path_styles/content/tei.css");
+
 
 
   // JS Libraries from - index.html https://github.com/cwrc/CWRC-Mapping-Timelines-Project/blob/f983df6a209f17c9d43d2b0e29ab031019d706e5/index.html

@@ -80,13 +80,13 @@
                                         markerWidth: 18,
                                         markerHeight: 18">
             </map>
-            <grid data-tab-label="Grid View" params="columns: {'Title': 'longLabel',
+            <grid data-tab-label="Grid View" params="columns: {'Label': 'label',
                                         'Collection': 'group',
                                         'Location': 'location',
                                         'Lat/Lng': 'latLng',
                                         'Start': 'startDate',
                                         'End': 'endDate'},
-                              initialSortBy: ['group', 'longLabel-za']">
+                              initialSortBy: ['group', 'label-za']">
             </grid>
         </tab_pane>
     </expander>
@@ -249,6 +249,11 @@
                 <td data-bind="html: item[$parents[1].columns[columnLabel]] || 'n/a', css: $parents[1].getColumnClass(columnLabel)">
                 </td>
                 <!-- /ko -->
+                <td>
+                    <a target="_blank" data-bind="attr: {href: item['link']}">
+                        Link
+                    </a>
+                </td>
             </tr>
             </tbody>
         </table>
