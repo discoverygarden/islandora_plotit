@@ -91,6 +91,12 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_css("$module_path/css/plotit.css");
 
 
+  // content formatting
+  drupal_add_css("$plotit_library_path_styles/content/orlando.css");
+  drupal_add_css("$plotit_library_path_styles/content/tei.css");
+
+
+
   // Styles from - index.html https://github.com/cwrc/CWRC-Mapping-Timelines-Project/blob/f983df6a209f17c9d43d2b0e29ab031019d706e5/index.html
 
   $plotit_library_path_js = "$plotit_library_path/assets/javascripts";
@@ -101,19 +107,18 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_css("$plotit_library_path_styles/components/filters/date_filter.css");
   drupal_add_css("$plotit_library_path_styles/components/filters/checklist_filter.css");
   drupal_add_css("$plotit_library_path_styles/components/filters/filter_reset.css");
+  drupal_add_css("$plotit_library_path_styles/components/filters/filter_save_results.css");
   drupal_add_css("$plotit_library_path_styles/components/tab_pane.css");
   drupal_add_css("$plotit_library_path_styles/components/expander.css");
+  drupal_add_css("$plotit_library_path_styles/components/resizer.css");
   drupal_add_css("$plotit_library_path_styles/components/spotlight.css");
   drupal_add_css("$plotit_library_path_styles/components/map.css");
   drupal_add_css("$plotit_library_path_styles/components/grid.css");
   drupal_add_css("$plotit_library_path_styles/components/timeline.css");
   drupal_add_css("$plotit_library_path_styles/components/loading.css");
-  drupal_add_css("$plotit_library_path_js/lib/noUiSlider.8.0.2/nouislider.min.css");
 
-// content formatting
-  drupal_add_css("$plotit_library_path_styles/content/orlando.css");
-  drupal_add_css("$plotit_library_path_styles/content/tei.css");
-
+  // JS Libraries CSS
+  drupal_add_css("$plotit_library_path_js/lib/noUiSlider.8.5.1/nouislider.min.css");
 
 
   // JS Libraries from - index.html https://github.com/cwrc/CWRC-Mapping-Timelines-Project/blob/f983df6a209f17c9d43d2b0e29ab031019d706e5/index.html
@@ -123,10 +128,18 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_js("$plotit_library_path_js/lib/knockout-mapping-2.0.min.js");
   drupal_add_js("http://maps.googleapis.com/maps/api/js?sensor=false");
   drupal_add_js("$plotit_library_path_js/lib/spiderfy.min.js");
-  drupal_add_js("$plotit_library_path_js/lib/noUiSlider.8.0.2/nouislider.min.js");
+  drupal_add_js("$plotit_library_path_js/lib/FileSaver.js");
+  drupal_add_js("$plotit_library_path_js/lib/native.history.min.js");
+  drupal_add_js("$plotit_library_path_js/lib/URI-1.17.1-base.js");
+
+  drupal_add_js("$plotit_library_path_js/lib/noUiSlider.8.5.1/nouislider.min.js");
+
+  drupal_add_js("$plotit_library_path_js/util/loading.js");
   drupal_add_js("$plotit_library_path_js/util/network.js");
   drupal_add_js("$plotit_library_path_js/util/transform.js");
+
   drupal_add_js("$plotit_library_path_js/plot_it.js");
+  drupal_add_js("$plotit_library_path_js/plot_it_knockout_ext.js");
 
   // KO components
 
@@ -134,13 +147,14 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   drupal_add_js("$plotit_library_path_js/components/filters/date_filter.js");
   drupal_add_js("$plotit_library_path_js/components/filters/checklist_filter.js");
   drupal_add_js("$plotit_library_path_js/components/filters/filter_reset.js");
+  drupal_add_js("$plotit_library_path_js/components/filters/filter_save_results.js");
   drupal_add_js("$plotit_library_path_js/components/tab_pane.js");
   drupal_add_js("$plotit_library_path_js/components/expander.js");
+  drupal_add_js("$plotit_library_path_js/components/resizer.js");
   drupal_add_js("$plotit_library_path_js/components/spotlight.js");
   drupal_add_js("$plotit_library_path_js/components/timeline.js");
   drupal_add_js("$plotit_library_path_js/components/map.js");
   drupal_add_js("$plotit_library_path_js/components/grid.js");
-  drupal_add_js("$plotit_library_path_js/components/loading.js");
 
 
 }
