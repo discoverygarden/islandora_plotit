@@ -8,7 +8,7 @@
 /**
  * Implements hook_drush_command().
  */
-function islandora_cwrc_basexdb_drush_command()
+function islandora_plotit_drush_command()
 {
  
   $items = array();
@@ -34,10 +34,13 @@ function drush_islandora_plotit_voyant_test()
   try 
   {
 
+    module_load_include('inc', 'islandora_plotit', 'includes/voyant_helpers');  
+
     drush_print("results:");     
     $pid = "cwrc:documentCollection";
     $fedora_object = islandora_object_load($pid);                               
-    islandora_cwrc_voyant_create_batch($fedora_object)
+    drush_print($fedora_object->id);
+    islandora_cwrc_voyant_create_batch($fedora_object);
 
   } catch (Exception $e) {
      // print exception
