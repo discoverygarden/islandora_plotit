@@ -93,6 +93,16 @@ function islandora_plotit_menu() {
   );
 
 
+  // Voyant integration - test
+  $items['islandora/object/%islandora_object/voyant'] = array(
+    'title' => 'View Voyant',
+    'page callback' => 'islandora_plotit_collection_voyant_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/voyant_helpers.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
 
 
 
