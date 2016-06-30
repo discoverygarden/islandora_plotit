@@ -9,6 +9,7 @@
 
 /**
  * Query the RI index to get PIDs of all 'isMemberOfCollection' objects in the collection (1 degree from the specifed object)
+ * ToDo: traverse entire subgraph
  *
  * @param object $islandora_object
  *   The Islandora collection object to find its member objects.
@@ -83,6 +84,7 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
   if (!$zipArchive->open($filePath, ZipArchive::OVERWRITE))
         die("Failed to create archive\n");
 
+  //Todo: what to name zip if Search or Bookmark initiates?
   $base_label = islandora_cwrc_voyant_pid_to_dirname($fedora_object->id);
   $zipArchive->addEmptyDir($base_label); 
   $member_base_label = $base_label.'/members/';
@@ -134,7 +136,7 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
           $extension = $mime_detect->getExtension($datastream->mimetype);
           //print $extension . "\n";
 
-          if  ($datastream->mimetype==='text/xml' or $datastream->mimetype==='application/xml' or $datastream->id==='RELS-EXT' )
+          if  ($datastream->mimetype==='text/xml' or $datastream->mimetype==='application/xml' or $datastream->mimetype==='application/pdf' or $datastream->mimetype==='text/plain' or $datastream->id==='RELS-EXT' )
           {
             $tmp = $member_dir_label . '/' . $datastream->id . '.' . $extension;
             $zipArchive->addFromString($tmp, $datastream->content); 
@@ -162,11 +164,10 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
 /**
  * @file
  * Function(s) related to viewing collections in Voyant.
+ *
+ * ToDo: replace with proper integration of Voyant into the Drupal interface
  */
 
-/**
- * Build a Solr query to find collections, build a zip, and redirect to Voyant.
- */
 function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
 {
 
@@ -176,7 +177,7 @@ function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
   $base_label = islandora_cwrc_voyant_pid_to_dirname($fedora_object->id);
   $random_string = substr(md5(rand()), 0, 7);
   //$tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_bagit_tmp/' . $random_string;
-  $tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp/';
+  $tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp';
   $zipFile =  $base_label . '.zip';
   //$zipFile = "zzz.zip";
 
@@ -192,6 +193,12 @@ function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
  
   $post_fields = array('file_contents'=>'@'.$file_name_with_full_path . ';filename='.$zipFile);
 
+  // One way to instantiate Voyant - not sure how to do this within the 
+  // new Drupal interface
+  // <form action="http://voyant-tools.org/" method="POST" enctype="multipart/form-data">
+  //   <p><input type="file" name="input">
+  //   <p><button type="submit">Submit</button>
+  // </form>
 
   // ToDo
   // kludge - parse the redirect location information from Voyant 
@@ -226,16 +233,24 @@ function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
 
   preg_match("/Location: (h.*)/", $result, $matches);
 
-  //print_r($result);
-  //print_r($matches[1]);
-  drupal_goto($matches[1]);
-
-
   // ToDo: this is never cleaned up because never called
+  // expecially if an exception occurs
   // Clean up the temp directory where we downloaded the datastreams.
-  if (file_exists($zipFile)) {
-    //rmdir($zipFile);
+  if (file_exists($file_name_with_full_path)) {
+    //rmdir($file_name_with_full_path);
+    unlink($file_name_with_full_path);
   }
+  
+  if ($matches[1])
+  {
+    //print_r($matches[1]);
+    drupal_goto($matches[1]);
+  }
+  else
+  {
+    print_r($result);
+  }
+
 
 }
 
