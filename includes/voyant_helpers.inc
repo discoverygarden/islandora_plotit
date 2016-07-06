@@ -136,7 +136,13 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
           $extension = $mime_detect->getExtension($datastream->mimetype);
           //print $extension . "\n";
 
-          if  ($datastream->mimetype==='text/xml' or $datastream->mimetype==='application/xml' or $datastream->mimetype==='application/pdf' or $datastream->mimetype==='text/plain' or $datastream->id==='RELS-EXT' )
+          if  ( (
+            $datastream->mimetype==='text/xml' 
+            or $datastream->mimetype==='application/xml' 
+            or $datastream->mimetype==='application/pdf' 
+            or $datastream->mimetype==='text/plain'
+          ) and !($datastream->id==='RELS-EXT' or $datastream->id==='POLICY') 
+        )
           {
             $tmp = $member_dir_label . '/' . $datastream->id . '.' . $extension;
             $zipArchive->addFromString($tmp, $datastream->content); 
@@ -178,7 +184,8 @@ function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
   $random_string = substr(md5(rand()), 0, 7);
   //$tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_bagit_tmp/' . $random_string;
   $tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp';
-  $zipFile =  $base_label . '.zip';
+  // add random string to the name to account for 2 users simutaneously excuting
+  $zipFile =  $base_label . '-' . $random_string . '.zip';
   //$zipFile = "zzz.zip";
 
   $file_name_with_full_path = $tmp_ds_directory . '/' . $base_label . '.zip';
