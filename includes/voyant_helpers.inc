@@ -188,7 +188,7 @@ function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
   $zipFile =  $base_label . '-' . $random_string . '.zip';
   //$zipFile = "zzz.zip";
 
-  $file_name_with_full_path = $tmp_ds_directory . '/' . $base_label . '.zip';
+  $file_name_with_full_path = $tmp_ds_directory . '/' . $zipFile;
   //$file_name_with_full_path = '/tmp/'.$zipFile;
 
   islandora_cwrc_voyant_populate($zipArchive, $file_name_with_full_path, $fedora_object);
