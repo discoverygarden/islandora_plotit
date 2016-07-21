@@ -89,7 +89,7 @@ function islandora_plotit_menu() {
     'access callback' => 'islandora_plotit_collection_access',
     'access arguments' => array(2),
     'file' => 'includes/collection-output.inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_CALLBACK,
   );
 
 
@@ -101,7 +101,7 @@ function islandora_plotit_menu() {
     'access callback' => 'islandora_plotit_collection_access',
     'access arguments' => array(2),
     'file' => 'includes/voyant_helpers.inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_CALLBACK,
   );
 
 
