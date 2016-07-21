@@ -109,6 +109,52 @@ function islandora_plotit_menu() {
   return $items;
 }
 
+
+/**
+ * Implements hook_cwrc_visualization_info().
+ * 
+ * Does so on behalf of the plotit module, the only visualization tool available
+ * as of yet.
+ * */
+function islandora_plotit_cwrc_visualization_info() {
+
+  global $base_url;
+
+  $tools = array();
+
+  $tools['plotit-2.0'] = array(
+      'label' => 'PlotIt 2.0',
+      'available cmodels' => array(
+        'islandora:collectionCModel',
+      ),
+      'url pattern' => $base_url.'/islandora/object/%object_pid%/plotit_xmldb',
+      'weight' => -10,
+      'search display' => 'plotit',
+      'search hide facets' => true,
+      'bookmark path' => 'islandora-bookmark/listid/%list_id%/plotit',
+    
+    );
+
+
+  $tools['voyant'] = array(
+      'label' => 'Voyant',
+      'available cmodels' => array(
+        'islandora:collectionCModel',
+      ),
+      'url pattern' => $base_url.'/islandora/object/%object_pid%/voyant',
+      'weight' => -10,
+      'search display' => 'voyant',
+      'search hide facets' => true,
+      'bookmark path' => 'islandora-bookmark/listid/%list_id%/voyant',
+    
+    );
+
+  return $tools;
+}
+
+
+
+
 /**
  * Implements hook_islandora_solr_secondary_display().
  */
