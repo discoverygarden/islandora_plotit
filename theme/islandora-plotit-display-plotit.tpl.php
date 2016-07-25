@@ -11,7 +11,6 @@
 ?>
 
 
-
 <div id="loading_overlay">
    <p>
       Loading <span></span>
@@ -20,12 +19,12 @@
 
 <section id="sidebar">
    <header>
-      <a href="/">Plot-It</a>
+      Plot-It
    </header>
 
    <section>
       <div id="filters">
-         <text_filter params="label: 'Search', placeholder: 'eg. Rocky Mountains'"></text_filter>
+         <text_filter params="label: '', placeholder: 'eg. Rocky Mountains'"></text_filter>
 
          <date_filter params="label: 'Date Range'"></date_filter>
 
@@ -50,7 +49,7 @@
       </p>
 
       <p>
-         <a id="help" href="http://cwrc.ca/Plot-It_Documentation" target="_blank">Help...</a>
+         <a class="help" href="http://cwrc.ca/Plot-It_Documentation" target="_blank">Help...</a>
       </p>
    </section>
 
@@ -66,42 +65,41 @@
    </section>
 </section>
 
-<main>
+<main class="display">
    <expander params="expandedText: 'Hide Timeline', collapsedText: 'Show Timeline'">
-      <timeline params="startDate: '1950', zoom: 23"></timeline>
+      <timeline params="startDate: '1950', zoom: 5"></timeline>
    </expander>
 
    <spotlight></spotlight>
 
    <expander>
       <tab_pane>
-         <map data-tab-label="Map View" params=" center: '38.479394673276445, -115.361328125',
-                                                 zoom: 3,
+         <atlas data-tab-label="Map View" params=" center: '38.479394673276445, -115.361328125',
+                                                 zoom: 1,
                                                  colorKey: 'eventType',
                                                  colors: {Bibliography: '#00f', Publication: '#0f0', Unknown: 'grey'},
                                                  opacity: '0.5',
                                                  markerWidth: 18,
                                                  markerHeight: 18">
-         </map>
+         </atlas>
          <style>
             grid .grid-start,
             grid .grid-end {
                white-space: nowrap;
             }
-
             grid .grid-lat-lng {
                max-width: 12em;
-
                overflow: auto;
             }
          </style>
-         <grid data-tab-label="Grid View" params="columns: {'Event': 'label',
-                                                                'Collection': 'group',
-                                                                'Location': 'location',
-                                                                'Lat/Lng': 'latLng',
-                                                                'Start': 'startDate',
-                                                                'End': 'endDate'},
-                                                                initialSortBy: ['group', 'label-za']">
+         <grid data-tab-label="Grid View" params="columns: {
+                                                     'Event': 'label',
+                                                     'Collection': 'group',
+                                                     'Location': 'location',
+                                                     'Lat/Lng': 'latLng',
+                                                     'Start': 'startDate',
+                                                     'End': 'endDate'},
+                                                  initialSortBy: ['group', 'label-za']">
          </grid>
       </tab_pane>
    </expander>
@@ -186,47 +184,52 @@
    -->
    <template id="timeline-template">
       <section>
-         <div>
+         <div class="unplottable">
             <span data-bind="text: unplottableCount"></span>
             of
             <span data-bind="text: CWRC.rawData().length"></span>
             lack time data
          </div>
       </section>
-      <section id="timeline-ruler">
-         <div style="height: 1em" data-bind="foreach: ruler.step(ruler.shiftUnit(ruler.unit(), 1))">
+      <section class="timeline-ruler">
+         <div data-bind="foreach: ruler.step(ruler.shiftUnit(ruler.unit(), 1))">
             <span data-bind="text: $data.label, style: {left: $data.position}"></span>
          </div>
-         <div style="height: 1em" data-bind="foreach: ruler.step(ruler.unit())">
+         <div data-bind="foreach: ruler.step(ruler.unit())">
             <span data-bind="text: $data.label, style: {left: $data.position}"></span>
          </div>
       </section>
       <resizer>
-         <div data-bind="event: { mousedown: $parent.dragStart, touchstart: $parent.dragStart }">
-            <section id="timeline-viewport" data-bind="event: {wheel: $parent.scrollHandler}">
-               <div class="canvas" style="position: relative" data-bind="style: {
-                                                        width: $parent.canvas.bounds.width(),
-                                                        height: $parent.canvas.bounds.height()
-                                                      },
-                                              foreach: {data: $parent.canvas.tokens, as: 'token'} ">
-                  <!--
-                  transform: $parent.canvas.zoomTransform,
-                                                        '-ms-transform': $parent.canvas.zoomTransform,
-                                                        '-webkit-transform': $parent.canvas.zoomTransform
-                  -->
+         <div data-bind="event: { mousedown: $parent.mouseHandler.onDragStart,
+                                  touchstart: $parent.touchHandler.onTouch }">
+            <section class="timeline-viewport" data-bind="event: {wheel: $parent.mouseHandler.onScroll}">
+               <div class="canvas"
+                    style="position: relative"
+                    data-bind="style: {
+                                         width: $parent.canvas.bounds.width(),
+                                         height: $parent.canvas.bounds.height(),
+                                         msTransform: $parent.viewport.translateTransform,
+                                         webkitTransform: $parent.viewport.translateTransform,
+                                         transform: $parent.viewport.translateTransform
+                                       },
+                               foreach: {data: $parent.canvas.tokens, as: 'token'} ">
                   <div class="event" data-bind="visible: token.visible,
                                                 css: { selected: token.isSelected(),
                                                        period: token.data.endDate
                                                      },
                                                 style: {
-                                                         left: token.xPos,
+                                                         left: 0,
                                                          height: token.height() + 'px',
                                                          width: token.lineWidth() + 'px',
-                                                         zIndex: token.layer()
+                                                         zIndex: token.layer(),
+                                                         msTransform: token.markerTransform,
+                                                         webkitTransform: token.markerTransform,
+                                                         transform: token.markerTransform
                                                        },
                                                 attr: {id: 'token-' + token.id}">
-                     <a href="#" data-bind="event: {mouseup: $parents[1].recordMouseUp,
-                                                    mousedown: $parents[1].recordMouseDown,
+                     <a href="#" data-bind="event: {
+                                                    mouseup: $parents[1].mouseHandler.recordMouseUp,
+                                                    mousedown: $parents[1].mouseHandler.recordMouseDown,
                                                     mouseover: function(){ token.isHovered(true) },
                                                     mouseout:  function(){ token.isHovered(false) }
                                                     },
@@ -252,7 +255,7 @@
    <template id="grid-template">
       <div class="grid-controls">
          <div class="grid-sorter">
-            Sort <span data-bind="visible: sortContexts().length > 0">by</span>
+            <p class="prompt">Sort <span data-bind="visible: sortContexts().length > 0">by</span></p>
             <!-- Building a "widget" for editing each sorting context-->
             <div data-bind="foreach: sortContexts">
                <div>
@@ -350,10 +353,10 @@
 
    <!--
    ===============================================
-                       Map
+                       Atlas
    ===============================================
    -->
-   <template id="map-template">
+   <template id="atlas-template">
       <section>
          <div class="unplottable">
             <span data-bind="text: unplottableCount"></span>
@@ -367,11 +370,20 @@
             <input type="checkbox" data-bind="checked: showHistoricalMap">
             <span>Historical Map</span>
          </label>
-         <label id="historicalOpacityControls" data-bind="visible: showHistoricalMap">
-            <span>Opacity</span>
-            <input id="historicalMapOpacity" type="range" min="0.0" max="1.0" step="0.05"
-                   data-bind="value: historicalMapOpacity" />
-         </label>
+
+         <div data-bind="visible: showHistoricalMap">
+            <label>
+               <span>Map</span>
+               <select data-bind="options: overlays,
+                                  optionsText: getOverlayName,
+                                  value: selectedOverlay"></select>
+            </label>
+            <label>
+               <span>Opacity</span>
+               <input id="historicalMapOpacity" type="range" min="0.0" max="1.0" step="0.05"
+                      data-bind="value: historicalMapOpacity" />
+            </label>
+         </div>
       </div>
       <!-- identifying by ID does limit to one map per page, but that works for now -->
       <div data-bind="style: {height: canvasHeight}" id="map_canvas">
@@ -410,7 +422,7 @@
       </div>
    </template>
 
-j   <!--
+   <!--
    ===============================================
                     Error Status
    ===============================================
@@ -455,4 +467,3 @@ j   <!--
       </div>
    </template>
 </div>
-
