@@ -125,7 +125,7 @@ function template_preprocess_islandora_plotit_display_plotit(&$variables) {
   // JS Libraries from - index.html https://github.com/cwrc/CWRC-Mapping-Timelines-Project/blob/f983df6a209f17c9d43d2b0e29ab031019d706e5/index.html
 
 
-  drupal_add_js("$plotit_library_path_js/lib/knockout-3.4.0.js");
+  drupal_add_js("$plotit_library_path_js/lib/knockout-3.4.0.min.js");
   drupal_add_js("$plotit_library_path_js/lib/knockout-mapping-2.0.min.js");
   drupal_add_js("http://maps.googleapis.com/maps/api/js?sensor=false");
   drupal_add_js("$plotit_library_path_js/lib/spiderfy.min.js");
