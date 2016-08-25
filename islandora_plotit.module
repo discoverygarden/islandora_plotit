@@ -93,12 +93,24 @@ function islandora_plotit_menu() {
   );
 
 
-  // Voyant integration - test
+  // Voyant integration - Fedora Object 
   $items['islandora/object/%islandora_object/voyant'] = array(
     'title' => 'View Voyant',
     'page callback' => 'islandora_plotit_collection_voyant_page',
     'page arguments' => array(2),
     'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/voyant_helpers.inc',
+    'type' => MENU_CALLBACK,
+  );
+  // Voyant integration 
+  // bookmark: callback from the  
+  $items['islandora-bookmark/listid/%/voyant'] = array(
+    'title' => 'Voyant content delimited by a bookmark list %id',
+    'title arguments' => array('%id' => 2),
+    'page callback' => 'islandora_plotit_bookmark_voyant_page',
+    'page arguments' => array(2),
+    'access callback' => 'islandora_plotit_bookmark_access',
     'access arguments' => array(2),
     'file' => 'includes/voyant_helpers.inc',
     'type' => MENU_CALLBACK,
@@ -131,7 +143,7 @@ function islandora_plotit_cwrc_visualization_info() {
       'weight' => 10,
       'search display' => 'plotit',
       'search hide facets' => true,
-      'bookmark path' => 'islandora-bookmark/listid/%list_id%/plotit',
+      'bookmark path' => 'islandora-bookmark/listid/%list_id%/plotit_xmldb_json',
     
     );
 

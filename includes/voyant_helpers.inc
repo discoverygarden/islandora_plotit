@@ -3,6 +3,11 @@
 /**
  * @file
  * Purpose: provide helper functions for the Voyant connector
+ *
+ * Given either a collection PID or bookmark id, build a list
+ * of PIDs and from the list build a zip archive of 
+ * Voyant interppretable content to send via multi-part from request
+ *
  */
 
 
@@ -33,9 +38,38 @@ WHERE {
 EOQ;
 
   $members = $tuque->repository->ri->sparqlQuery($ri_query, 'unlimited');
-  
 }
 
+
+/**
+ * Lookup the bookmark ID and get a list of PIDs
+ *
+ * @param string $list_id
+ *  The ID of a bookmark list.
+ * 
+ * @return array
+ *  List of PIDs
+ */ 
+function islandora_cwrc_voyant_get_members_via_bookmark_list($list_id)
+{
+  $list = Bookmark::getList($list_id);
+  if ($list->getPidCount() > 0) {
+    $pids = $list->getPids(0, ISLANDORA_PLOTIT_MAX_RESULTS);
+  }
+  return $pids;
+}
+
+
+/*
+ * Given a Fedora PID in the form of namespace:UUID,
+ * build a valid filename directory name label escaping special characters
+ *
+ * @param pid 
+ *  Fedora PID
+ *
+ * @return
+ *  valid filename / directory name
+ */
 function  islandora_cwrc_voyant_pid_to_dirname($pid)
 {
   return str_replace(array(':', '-'), '_', $pid);
@@ -64,17 +98,9 @@ function  islandora_cwrc_voyant_create_batch($fedora_object)
 }
 
 
-function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
+function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object, $objects_to_include)
 {
-
-
-  // Get list of all objects to include in this Bag.
-  $objects_to_include = null;
-  islandora_cwrc_voyant_get_members_via_ri($fedora_object, $objects_to_include);
   $num_objects = count($objects_to_include);
-  
-//  var_dump($objects_to_include);  
-
 
   // build a zip archive
   // structure:
@@ -96,7 +122,7 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
   $anon_user = drupal_anonymous_user();
 
 
-  // caches - we want to change user to anonymous
+  // don't use credential cache - we want to change user to anonymous
   //$anon_connection = islandora_get_tuque_connection($anon_user,NULL);
   //$anon_connection = islandora_get_tuque_connection($user['id']=0,NULL);
 
@@ -113,10 +139,10 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
   // Iterate through all the objects and create an entry in $operations
   // for each one.
   $mime_detect = new MimeDetect();
-  foreach ($objects_to_include as $result) {
+  foreach ($objects_to_include as $pid) {
     try {          
-      $pid = $result['object']['value']; // match SparQL select term
-       //$fedora_object = islandora_object_load($pid);
+      // don't use credential cache - we want to change user to anonymous
+      //$fedora_object = islandora_object_load($pid);
       //$fedora_object = new FedoraObject($pid, $anon_repository);
       $fedora_object = $anon_connection->repository->getObject($pid);;
 
@@ -141,7 +167,12 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
             or $datastream->mimetype==='application/xml' 
             or $datastream->mimetype==='application/pdf' 
             or $datastream->mimetype==='text/plain'
-          ) and !($datastream->id==='RELS-EXT' or $datastream->id==='POLICY') 
+          ) and 
+          !(
+            $datastream->id==='RELS-EXT' 
+            or $datastream->id==='POLICY' 
+            or $datastream->id==='WORKFLOW'
+          ) 
         )
           {
             $tmp = $member_dir_label . '/' . $datastream->id . '.' . $extension;
@@ -166,6 +197,49 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
 }
 
 
+/**
+ * @file
+ * Build a Voyant page using a bookmark list as input.
+ *
+ * @param string $list_id
+ *   The ID of a bookmark list.
+ */
+function islandora_plotit_bookmark_voyant_page($list_id)
+{
+
+  $pid_array = islandora_cwrc_voyant_get_members_via_bookmark_list($list_id);
+
+  if ($pid_array && count($pid_array > 0))
+  {
+    islandora_plotit_voyant_page($fedora_object, $pid_array);
+  }
+}
+
+/**
+ * @file
+ * Build a Voyant page using a Fedora/Islandora Collection PID.
+ *
+ * @param string $fedora_object
+ *   The ID of a Islandora collection.
+ */
+function islandora_plotit_collection_voyant_page(AbstractObject $fedora_object)
+{
+
+  // Get list of all objects to include in this Bag.
+  $ri_result = null;
+  islandora_cwrc_voyant_get_members_via_ri($fedora_object, $ri_result);
+
+  if ($ri_result && count($ri_result > 0))
+  {
+    // match SparQL select term
+    $pid_array = array_map(
+        function($ri_result) { return $ri_result['object']['value']; }, $ri_result);
+    islandora_plotit_voyant_page($fedora_object, $pid_array);
+  }
+}
+
+
+
 
 /**
  * @file
@@ -174,26 +248,29 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object)
  * ToDo: replace with proper integration of Voyant into the Drupal interface
  */
 
-function islandora_plotit_collection_voyant_page (AbstractObject $fedora_object)
+function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
 {
 
   $zipArchive = new ZipArchive();
-
 
   $base_label = islandora_cwrc_voyant_pid_to_dirname($fedora_object->id);
   $random_string = substr(md5(rand()), 0, 7);
   //$tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_bagit_tmp/' . $random_string;
   $tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp';
+
+  //ToDo: create directory if it doesn't already exist
+  if (!file_exists($tmp_ds_directory)) {
+    mkdir($tmp_ds_directory, 0777, TRUE);
+  }
+
+
   // add random string to the name to account for 2 users simutaneously excuting
   $zipFile =  $base_label . '-' . $random_string . '.zip';
-  //$zipFile = "zzz.zip";
-
   $file_name_with_full_path = $tmp_ds_directory . '/' . $zipFile;
-  //$file_name_with_full_path = '/tmp/'.$zipFile;
 
-  islandora_cwrc_voyant_populate($zipArchive, $file_name_with_full_path, $fedora_object);
+  islandora_cwrc_voyant_populate($zipArchive, $file_name_with_full_path, $fedora_object, $pid_array);
 
-
+  // build call to remote Voyant tool
   $target_url = "http://voyant-tools.org";
   
   $headers = array("Content-Type:multipart/form-data");
