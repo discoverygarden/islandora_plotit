@@ -388,9 +388,8 @@
       <!-- identifying by ID does limit to one map per page, but that works for now -->
       <div data-bind="style: {height: canvasHeight}" id="map_canvas">
       </div>
-      <resizer params="resizerObservable: canvasHeight, resizedId: 'map_canvas'">
-      </resizer>
-      <section data-bind="visible: colorTable.hasMapping()">
+      <resizer params="resizerObservable: canvasHeight, resizedId: 'map_canvas'"></resizer>
+      <section class="legend" data-bind="visible: colorTable.hasMapping()">
          <header>Legend</header>
          <!-- ko foreach: colorTable.getLegendPairs() -->
          <div>
