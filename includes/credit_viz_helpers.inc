@@ -131,11 +131,13 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
       $wfTmpArray['workflow_id'] = $wfID; 
       $wfTmpArray['object_pid'] = $fedora_object->id;
       $wfTmpArray['object_label'] = $fedora_object->label;
-      $wfTmpArray['collection_id'] = $fedora_object->label;
+      //$wfTmpArray['collection_id'] = json_encode($fedora_object->getParents()); 
       $wfTmpArray['user_id'] = $wfNode->getAttribute("userID"); 
       $wfTmpArray['user_name'] = ''; 
       $wfTmpArray['user_uri'] =  '';
-      $wfTmpArray['wf_date'] = $wfNode->getAttribute("date"); 
+
+      // ToDo: what timezone is used
+      $wfTmpArray['wf_date'] = $wfNode->getAttribute("date"). ' ' . $wfNode->getAttribute("time"); 
       $wfTmpArray['wf_time'] = $wfNode->getAttribute("time"); 
 
       // should only have one activity node
@@ -147,6 +149,8 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
         $wfTmpArray['wf_stamp'] = $wfActivityNode->getAttribute("stamp"); 
         $wfTmpArray['wf_status'] = $wfActivityNode->getAttribute("status"); 
       }
+      
+      $wfTmpArray['delta_by_size'] = 0; 
 
       $wfDocArray[] = $wfTmpArray;
       $cnt++;
@@ -157,7 +161,7 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
         //$result['attributes'][$attr->name] = $attr->value;
       //}
     }
-    islandora_plotit_cwrc_viz_update_delta($pid, $wfDocArray);
+    islandora_plotit_cwrc_viz_update_delta($fedora_object, $wfDocArray);
     islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray);
   }
 }
@@ -166,12 +170,120 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
  * add delta calculation to data structure 
  *
  */
-function islandora_plotit_cwrc_viz_update_delta($pid, &$wfDocArray)
+function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
 {
+  /*
   for ($i=0; $i < count($wfDocArray); $i++)
   {
     $wfDocArray[$i]['delta_by_size'] = rand(0,10000);
   }
+   */
+
+  $datastream = null;
+  
+  if ($fedora_object) 
+  {
+    // get the datastream to use for the size comparison
+    foreach ($fedora_object->models as $cModel)
+    {
+      if ($cModel == 'cwrc:documentCModel') 
+      {
+        $datastream = $fedora_object['CWRC'];
+        break;
+      }
+      else if ($cModel == 'cwrc:citationCMode') {
+        $datastream = $fedora_object['MODS'];
+        break;
+      }
+      else if ($cModel == 'cwrc:person-entityCModel') {
+        $datastream = $fedora_object['PERSON'];
+        break;
+      }
+      else if ($cModel == 'cwrc:organization-entityCModel') {
+        $datastream = $fedora_object['ORGANIZATION'];
+        break;
+      }
+      else {
+        $datastream = $fedora_object['MODS'];
+        break;
+      }
+    }
+  }
+
+    //var_dump($datastream->content);
+    //var_dump($datastream->createdDate);
+
+  //print("asdf" . $verIter);
+  //if ($verIter == 1) print_r($datastream[1]->createdDate);
+  //if ($verIter == 1) print_r($datastream[1]->size);
+
+
+  $wfIter = count($wfDocArray) - 1;
+  $verIter = 0;
+  
+  // assume sorted by date/time
+  // traverse both arrays matching workflow activities with Fedora datastream
+  // versions
+
+ //var_dump($wfDocArray); 
+
+  // ToDo: time zone - maybe change workflow schema to include timezone info? 
+  do {
+    //var_dump($datastream[$verIter]->size);
+
+    $wfDate = $wfDocArray[$wfIter]['wf_date'];
+    $verDate = $datastream[$verIter]->createdDate;
+
+
+    if ($wfIter <= 0 and $verIter < count($datastream))
+    {
+      //ran out of the wf items so accumulate on first workflow activity
+      $wfDocArray[0]['delta_by_size'] = $wfDocArray[0]['delta_by_size'] + $datastream[$verIter]->size; 
+      $verIter++;
+    }
+    else if ($verIter >= count($datastream) and $wfIter >= 0)
+    {
+      // ran out of versions therefor delta size is zero
+      //$wfDocArray[$wfIter]['delta_by_size'] = 0; 
+      $wfIter--;
+    }
+    else if (strtotime($wfDate) >= strtotime($verDate) and $wfIter >  0)
+    {
+      //don't use last workflow activity in this condition
+      // there is another workflow activity closer to ds version's date/time  
+      $nextWFDate =  $wfDocArray[$wfIter-1]['wf_date'];
+      if (strtotime($nextWFDate) < strtotime($verDate))
+      {
+        $wfDocArray[$wfIter]['delta_by_size'] = $wfDocArray[$wfIter]['delta_by_size'] + $datastream[$verIter]->size; 
+        $verIter++;
+        $wfIter--;
+      }
+      else
+      {
+        $wfDocArray[$wfIter]['delta_by_size'] = 0; 
+        $wfIter--;
+      }
+      //print("a:".$wfDate."b:".$verDate."\n");
+      //print("a:".strtotime($wfDate)."b:".strtotime($verDate)."\n");
+    }
+    else if ($wfDate < $verDate and $wfIter > 0)
+    {
+      $verIter++;
+    }
+    else
+    {
+      // should never happen
+      $wfIter--;
+      $verIter++;
+    }
+    
+    print("a:".$wfIter."b:".$verIter."\n");
+
+  } while ($wfIter >= 0 or $verIter < count($datastream));
+
+
+  var_dump($wfDocArray);
+
   /*
   foreach ($wfDocArray as $item)
   {
@@ -195,7 +307,6 @@ function islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray)
     'workflow_id'
     , 'object_pid'
     , 'object_label'
-    , 'collection_id'
     , 'user_id'
     , 'user_name'
     , 'user_uri'
@@ -215,6 +326,5 @@ function islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray)
   $query->execute();
 
 }
-
 
 

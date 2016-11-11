@@ -44,6 +44,29 @@ function islandora_plotit_requirements() {
 
 function islandora_plotit_schema() {
 
+  $schema['islandora_cwrc_credit_viz_collectionstore'] = array(
+    'description' => 'Table that stores CWRC Credit Visualization collection.',
+    'fields' => array(
+      'object_pid' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+        'description' => 'The PID of the Object.',
+      ),
+      'member_collection_pid' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+        'description' => 'The collection PID that the Object is a member of.',
+      ),
+    ),
+    'indexes' => array(
+      'cv_collection_object_pid_index' => array('object_pid'),
+      'cv_collection_pid_index' => array('member_collection_pid'),
+    ),
+    'primary_key' => array('object_id'),
+  );
+
   $schema['islandora_cwrc_credit_viz_datastore'] = array(
     'description' => 'Table that stores CWRC Credit Visualization datastore.',
     'fields' => array(
@@ -64,12 +87,6 @@ function islandora_plotit_schema() {
         'size' => 'tiny',
         'not null' => TRUE,
         'description' => 'The Label of the Object.',
-      ),
-      'collection_id' => array(
-        'type' => 'varchar',
-        'length' => '64',
-        'not null' => TRUE,
-        'description' => 'The collection PID that the Object is a member of.',
       ),
       'user_id' => array(
         'type' => 'varchar',
@@ -127,9 +144,8 @@ function islandora_plotit_schema() {
       ),
     ),
     'indexes' => array(
-      'user_id_index' => array('user_id'),
-      'pid_index' => array('object_pid'),
-      'collection_id_index' => array('collection_id'),
+      'cv_user_id_index' => array('user_id'),
+      'cv_pid_index' => array('object_pid'),
     ),
     'primary_key' => array('workflow_id'),
   );
