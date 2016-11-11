@@ -35,7 +35,7 @@ function islandora_plotit_cwrc_credit_viz_api()
 
   $docArray = array();
 
-  $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids)",
+  $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids) ORDER BY object_pid, workflow_id ",
     array(':pids' => $pidArray)
   );
   
@@ -45,6 +45,7 @@ function islandora_plotit_cwrc_credit_viz_api()
 
     $detailsArray;
     $modArray;
+    $cnt = 0;
 
     do 
     {
@@ -54,11 +55,12 @@ function islandora_plotit_cwrc_credit_viz_api()
       if (!$row or ($row and $lastPID and $lastPID!=$row['object_pid']) )
       {
         $docArray[] = $detArray;
+        $cnt = 0;
       }
 
       if ($row)
       {
-        if ($lastPID=null or $lastPID!=$row['object_pid'])
+        if ($lastPID==null or $lastPID!=$row['object_pid'])
         {
           $detArray = null;
           $modArray = null;
@@ -77,13 +79,7 @@ function islandora_plotit_cwrc_credit_viz_api()
         $detArray['modifications'][] = $modArray;
       }
 
-      
     } while ($row);
-
-
-    //while ($row = $query_result->fetchAssoc()) {
-      //var_dump($row);
-    //}
   }
 
   $ret['documents'] = $docArray;
