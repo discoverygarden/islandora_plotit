@@ -238,7 +238,9 @@ function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
     if ($wfIter <= 0 and $verIter < count($datastream))
     {
       //ran out of the wf items so accumulate on first workflow activity
-      $wfDocArray[0]['delta_by_size'] = $wfDocArray[0]['delta_by_size'] + $datastream[$verIter]->size; 
+      $deltaSize = islandora_plotit_cwrc_viz_delta_versions_by_size($datastream,$verIter);
+      //$wfDocArray[0]['delta_by_size'] = $wfDocArray[0]['delta_by_size'] + $datastream[$verIter]->size; 
+      $wfDocArray[0]['delta_by_size'] = $wfDocArray[0]['delta_by_size'] + $deltaSize; 
       $verIter++;
     }
     else if ($verIter >= count($datastream) and $wfIter >= 0)
@@ -254,7 +256,9 @@ function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
       $nextWFDate =  $wfDocArray[$wfIter-1]['wf_date'];
       if (strtotime($nextWFDate) < strtotime($verDate))
       {
-        $wfDocArray[$wfIter]['delta_by_size'] = $wfDocArray[$wfIter]['delta_by_size'] + $datastream[$verIter]->size; 
+        $deltaSize = islandora_ploti_cwrc_viz_delta_versions_by_size($datastream,$verIter);
+        //$wfDocArray[$wfIter]['delta_by_size'] = $wfDocArray[$wfIter]['delta_by_size'] + $datastream[$verIter]->size; 
+        $wfDocArray[$wfIter]['delta_by_size'] = $wfDocArray[$wfIter]['delta_by_size'] + $deltaSize; 
         $verIter++;
         $wfIter--;
       }
@@ -293,6 +297,30 @@ function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
   }
    */
 }
+
+/**
+ * delta current and previous version
+ */
+function islandora_plotit_cwrc_viz_delta_versions_by_size($datastream, $currentVersion)
+{
+  $delta = 0;
+
+  if ($currentVersion+1 < count($datastream))
+  {
+    $delta = abs($datastream[$currentVersion]->size - $datastream[$currentVersion+1]->size);
+  } 
+  else if ($currentVersion == count($datastream)-1)
+  {
+    $delta = $datastream[$currentVersion]->size;
+  }
+  else
+  {
+    print('Error in calculating delta');
+  }
+
+  return $delta;
+}
+
 
 /**
  * add content to the datastore
