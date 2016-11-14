@@ -42,7 +42,8 @@ function islandora_plotit_cwrc_credit_viz_api()
     $ret['query'] = array(ISLANDORA_CWRC_CREDIT_VIZ_REQ_PID => $pidArray);
 
     // all workflow from the specified documents the specified collection 
-    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids) ORDER BY object_pid, workflow_id ",
+    // needs sorting for version difference calculation
+    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids) ORDER BY object_pid, wf_date, wf_time, workflow_id ",
       array(':pids' => $pidArray)
     );
   }
@@ -62,10 +63,11 @@ function islandora_plotit_cwrc_credit_viz_api()
     $ret['query'] = array(ISLANDORA_CWRC_CREDIT_VIZ_REQ_COLLECTION => $pidArray);
 
     // all workflow from documents at are members of the specified collection 
+    // needs sorting for version difference calculation
     $query_result = db_query(
       "SELECT ds.* "
       . "FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} ds, {".ISLANDORA_CWRC_CREDIT_VIZ_COLLECTSTORE."} cs "
-      . " WHERE cs.object_pid=ds.object_pid and cs.member_collection_pid IN (:pids) ORDER BY object_pid, workflow_id ",
+      . " WHERE cs.object_pid=ds.object_pid and cs.member_collection_pid IN (:pids) ORDER BY object_pid, wf_date, wf_time, workflow_id ",
       array(':pids' => $pidArray)
     );
   }
@@ -86,7 +88,8 @@ function islandora_plotit_cwrc_credit_viz_api()
 
 
     // all workflow from documents touched by the specified users
-    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (SELECT object_pid FROM  {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE user_id IN (:user_ids) ) ORDER BY object_pid, workflow_id ",
+    // needs sorting for version difference calculation
+    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (SELECT object_pid FROM  {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE user_id IN (:user_ids) ) ORDER BY object_pid, wf_date, wf_time, workflow_id ",
       array(':user_ids' => $tmpArray)
     );
 
@@ -230,6 +233,7 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
 
 /**
  * add delta calculation to data structure 
+ * assumes sorted input
  *
  */
 function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
