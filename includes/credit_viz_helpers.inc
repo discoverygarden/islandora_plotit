@@ -9,7 +9,11 @@
 
 define('ISLANDORA_CWRC_CREDIT_VIZ_WORKFLOW', 'WORKFLOW');
 define('ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE', 'islandora_cwrc_credit_viz_datastore');
+define('ISLANDORA_CWRC_CREDIT_VIZ_COLLECTSTORE', 'islandora_cwrc_credit_viz_collectionstore');
 
+define('ISLANDORA_CWRC_CREDIT_VIZ_REQ_PID', 'pid');
+define('ISLANDORA_CWRC_CREDIT_VIZ_REQ_COLLECTION', 'collectionId');
+define('ISLANDORA_CWRC_CREDIT_VIZ_REQ_USER', 'userId');
 
 /**
  * prepare the JSON output for the credit visualization tool
@@ -18,27 +22,76 @@ define('ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE', 'islandora_cwrc_credit_viz_datasto
 function islandora_plotit_cwrc_credit_viz_api()
 {
   $req = $_REQUEST;
-  //var_dump($req);
-
-  $tmp = $_REQUEST['pid'];
-  $pidArray = null;
-  if (is_array($tmp))
-  {
-    $pidArray = $tmp;
-  }
-  else 
-  {
-    $pidArray = array($tmp);
-  }
-
-  $ret['query'] = $req;
-
+  $ret = null;
+  $queryResult = null;
   $docArray = array();
 
-  $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids) ORDER BY object_pid, workflow_id ",
-    array(':pids' => $pidArray)
-  );
-  
+  if ( array_key_exists(ISLANDORA_CWRC_CREDIT_VIZ_REQ_PID, $req) )
+  {
+    $tmp = $req[ISLANDORA_CWRC_CREDIT_VIZ_REQ_PID];
+    $pidArray = null;
+    if (is_array($tmp))
+    {
+      $pidArray = $tmp;
+    }
+    else 
+    {
+      $pidArray = array($tmp);
+    }
+
+    $ret['query'] = array(ISLANDORA_CWRC_CREDIT_VIZ_REQ_PID => $pidArray);
+
+    // all workflow from the specified documents the specified collection 
+    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (:pids) ORDER BY object_pid, workflow_id ",
+      array(':pids' => $pidArray)
+    );
+  }
+  else if ( array_key_exists(ISLANDORA_CWRC_CREDIT_VIZ_REQ_COLLECTION, $req) )
+  {
+    $tmp = $req[ISLANDORA_CWRC_CREDIT_VIZ_REQ_COLLECTION];
+    $pidArray = null;
+    if (is_array($tmp))
+    {
+      $pidArray = $tmp;
+    }
+    else 
+    {
+      $pidArray = array($tmp);
+    }
+
+    $ret['query'] = array(ISLANDORA_CWRC_CREDIT_VIZ_REQ_COLLECTION => $pidArray);
+
+    // all workflow from documents at are members of the specified collection 
+    $query_result = db_query(
+      "SELECT ds.* "
+      . "FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} ds, {".ISLANDORA_CWRC_CREDIT_VIZ_COLLECTSTORE."} cs "
+      . " WHERE cs.object_pid=ds.object_pid and cs.member_collection_pid IN (:pids) ORDER BY object_pid, workflow_id ",
+      array(':pids' => $pidArray)
+    );
+  }
+  else if ( array_key_exists(ISLANDORA_CWRC_CREDIT_VIZ_REQ_USER, $req) )
+  {
+    $tmp = $req[ISLANDORA_CWRC_CREDIT_VIZ_REQ_USER];
+    $tmpArray = null;
+    if (is_array($tmp))
+    {
+      $tmpArray = $tmp;
+    }
+    else 
+    {
+      $tmpArray = array($tmp);
+    }
+
+    $ret['query'] = array(ISLANDORA_CWRC_CREDIT_VIZ_REQ_USER => $tmpArray);
+
+
+    // all workflow from documents touched by the specified users
+    $query_result = db_query("SELECT * FROM {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE object_pid IN (SELECT object_pid FROM  {".ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE."} WHERE user_id IN (:user_ids) ) ORDER BY object_pid, workflow_id ",
+      array(':user_ids' => $tmpArray)
+    );
+
+  }
+
   if ($query_result)
   {
     $lastPID = null;
@@ -158,8 +211,20 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
         //$result['attributes'][$attr->name] = $attr->value;
       //}
     }
+
+    $parents = $fedora_object->getParents();
+    $collectionArray = null;
+    foreach ($parents as $collectionId)
+    {
+      $collectionArray[] = array (
+        'object_id' => $pid, 
+        'member_collection_id' => $collectionId
+      );
+    }
+
     islandora_plotit_cwrc_viz_update_delta($fedora_object, $wfDocArray);
     islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray);
+    islandora_plotit_cwrc_viz_update_collectionstore($pid, $collectionArray);
   }
 }
 
@@ -320,12 +385,13 @@ function islandora_plotit_cwrc_viz_delta_versions_by_size($datastream, $currentV
 
 
 /**
- * add content to the datastore
+ * add workflow content to the datastore
  */
 function islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray)
 {
 
   // ToDo: 2016-11-09 only add new workflow instead of the crude delete
+  // Build Workflow metadata store for efficient access
   $query = db_delete(ISLANDORA_CWRC_CREDIT_VIZ_DATASTORE)->condition('object_pid', $pid)->execute();
 
   $fields = array(
@@ -349,7 +415,24 @@ function islandora_plotit_cwrc_viz_update_datastore($pid, $wfDocArray)
     $query->values($item);
   }
   $query->execute();
-
 }
 
+
+/**
+ * add workflow content to the collection store
+ */
+function islandora_plotit_cwrc_viz_update_collectionstore($pid, $collectionArray)
+{
+  // ToDo: 2016-11-09 only add new workflow instead of the crude delete
+  // Collection store as an object may belong to multiple collections
+  $query = db_delete(ISLANDORA_CWRC_CREDIT_VIZ_COLLECTSTORE)->condition('object_pid', $pid)->execute();
+
+  $fields = array(
+    'object_pid'
+    ,'member_collection_pid'
+  );
+  $query = db_insert(ISLANDORA_CWRC_CREDIT_VIZ_COLLECTSTORE)->fields($fields);
+  $query->values($collectionArray);
+  $query->execute();
+}
 
