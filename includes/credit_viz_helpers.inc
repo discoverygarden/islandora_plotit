@@ -129,7 +129,8 @@ function islandora_plotit_cwrc_viz_one_PID($pid)
       $wfTmpArray['object_label'] = $fedora_object->label;
       //$wfTmpArray['collection_id'] = json_encode($fedora_object->getParents()); 
       $wfTmpArray['user_id'] = $wfNode->getAttribute("userID"); 
-      $wfTmpArray['user_name'] = ''; 
+      //ToDo: read from Drupal
+      $wfTmpArray['user_name'] = $wfNode->getAttribute("userID"); 
       $wfTmpArray['user_uri'] =  '';
 
       // ToDo: what timezone is used
@@ -277,12 +278,12 @@ function islandora_plotit_cwrc_viz_update_delta($fedora_object, &$wfDocArray)
       $verIter++;
     }
     
-    print("a:".$wfIter."b:".$verIter."\n");
+   // print("a:".$wfIter."b:".$verIter."\n");
 
   } while ($wfIter >= 0 or $verIter < count($datastream));
 
 
-  var_dump($wfDocArray);
+  //var_dump($wfDocArray);
 
   /*
   foreach ($wfDocArray as $item)
