@@ -319,7 +319,6 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
   $result=curl_exec ($ch);
   curl_close ($ch);
 
-  preg_match("/Location: (h.*)/", $result, $matches);
 
   // ToDo: this is never cleaned up because never called
   // expecially if an exception occurs
@@ -329,18 +328,17 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
     unlink($file_name_with_full_path);
   }
   
+  // in the past, mid-2016 Voyant would return the following as a redirect
+  //  Location: http://voyant-tools.org/?corpus=xxxxxxxxxxxxxx
+  // In early 2017, the redirect no looks like
+  //   Location: ./?corpus=xxxxxxxxxxx
+  preg_match("/Location: ([h.].*)/", $result, $matches);
   if ($matches[1])
   {
-    print_r($result);
-    print_r($matches);
     $redirect_url = $matches[1];
-    // in the past, mid-2016 Voyant would return the following as a redirect
-    //  Location: http://voyant-tools.org/?corpus=xxxxxxxxxxxxxx
-    // In early 2017, the redirect no looks like
-    //   Location: ./?corpus=xxxxxxxxxxx
     if (substr($redirect_url, 0, 1) === '.')
     {
-      $redirect_url = str_replace('/^\./', $target_url, $redirect_url);
+      $redirect_url = preg_replace('/^\./', $target_url, $redirect_url);
     }
     drupal_goto($redirect_url);
   }
