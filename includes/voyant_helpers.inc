@@ -259,7 +259,9 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
   $base_label = islandora_cwrc_voyant_pid_to_dirname($fedora_object->id);
   $random_string = substr(md5(rand()), 0, 7);
   //$tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_bagit_tmp/' . $random_string;
-  $tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp';
+  //$tmp_ds_directory = variable_get('islandora_bagit_bag_tmp_dir', file_directory_temp()) .  '/islandora_voyant_tmp';
+  //ToDo: proper location to same tmp file
+  $tmp_ds_directory = variable_get('file_temporary_path', file_directory_temp()) .  '/islandora_voyant_tmp';
 
   //ToDo: create directory if it doesn't already exist
   if (!file_exists($tmp_ds_directory)) {
