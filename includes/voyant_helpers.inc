@@ -117,12 +117,15 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object,
   $zipArchive->addEmptyDir($member_base_label); 
 
 
+  // restrict to only "public" material for now therefore
   // only include Fedora objects viewable by anonymous 
+  // don't use credential cache - we want to change user to anonymous
+  // ToDo: refactor so user is warned and given the option to send protected
+  // material to a third party
   // https://github.com/Islandora/islandora/wiki/Working-With-Fedora-Objects-Programmatically-Via-Tuque#connecting-to-fedora
   $anon_user = drupal_anonymous_user();
 
-
-  // don't use credential cache - we want to change user to anonymous
+  // this statement didn't work
   //$anon_connection = islandora_get_tuque_connection($anon_user,NULL);
   //$anon_connection = islandora_get_tuque_connection($user['id']=0,NULL);
 
@@ -162,6 +165,8 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object,
           $extension = $mime_detect->getExtension($datastream->mimetype);
           //print $extension . "\n";
 
+          // Todo: add mimetype and datastream ID to a admin config
+          // page - allow categorization by cModel?
           if  ( (
             $datastream->mimetype==='text/xml' 
             or $datastream->mimetype==='application/xml' 
@@ -181,10 +186,10 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object,
           }
         }
       }
-      //var_dump($fedora_object);
     }              
     catch (Exception $e)
     {              
+      // ToDo: what would a proper exception look like?
       //print_r($e);
       //$file_error_count++;
       //drush_print("pid=$pid was not added.");
@@ -206,7 +211,6 @@ function  islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object,
  */
 function islandora_plotit_bookmark_voyant_page($list_id)
 {
-
   $pid_array = islandora_cwrc_voyant_get_members_via_bookmark_list($list_id);
 
   if ($pid_array && count($pid_array > 0))
@@ -224,7 +228,6 @@ function islandora_plotit_bookmark_voyant_page($list_id)
  */
 function islandora_plotit_collection_voyant_page(AbstractObject $fedora_object)
 {
-
   // Get list of all objects to include in this Bag.
   $ri_result = null;
   islandora_cwrc_voyant_get_members_via_ri($fedora_object, $ri_result);
@@ -271,6 +274,7 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
   islandora_cwrc_voyant_populate($zipArchive, $file_name_with_full_path, $fedora_object, $pid_array);
 
   // build call to remote Voyant tool
+  // Todo: add Voyant URL to an admin page
   $target_url = "http://voyant-tools.org";
   
   $headers = array("Content-Type:multipart/form-data");
@@ -327,15 +331,23 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
   
   if ($matches[1])
   {
-    //print_r($matches[1]);
-    drupal_goto($matches[1]);
+    print_r($result);
+    print_r($matches);
+    $redirect_url = $matches[1];
+    // in the past, mid-2016 Voyant would return the following as a redirect
+    //  Location: http://voyant-tools.org/?corpus=xxxxxxxxxxxxxx
+    // In early 2017, the redirect no looks like
+    //   Location: ./?corpus=xxxxxxxxxxx
+    if (substr($redirect_url, 0, 1) === '.')
+    {
+      $redirect_url = str_replace('/^\./', $target_url, $redirect_url);
+    }
+    drupal_goto($redirect_url);
   }
   else
   {
     print_r($result);
   }
-
-
 }
 
 
