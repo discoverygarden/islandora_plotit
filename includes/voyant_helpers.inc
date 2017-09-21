@@ -30,10 +30,11 @@ function islandora_cwrc_voyant_get_members_via_ri($islandora_object, &$members) 
   // relationship with the specified collection and add all their PIDs to the
   // list.
   $ri_query = <<<EOQ
+PREFIX fedora-rels-ext: <info:fedora/fedora-system:def/relations-external#>
 SELECT ?object
 FROM <#ri>
 WHERE {
-  ?object <fedora-rels-ext:isMemberOfCollection> <info:fedora/{$islandora_object->id}>
+  ?object fedora-rels-ext:isMemberOfCollection <info:fedora/{$islandora_object->id}>
 }
 EOQ;
 
