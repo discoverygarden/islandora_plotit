@@ -8,6 +8,8 @@
  * of PIDs and from the list build a zip archive of 
  * Voyant interppretable content to send via multi-part from request
  *
+ * Todo: consider adding to https://github.com/cwrc/cwrc_visualization
+ *
  */
 
 
@@ -278,7 +280,7 @@ function islandora_plotit_voyant_page (AbstractObject $fedora_object,$pid_array)
 
   // build call to remote Voyant tool
   // Todo: add Voyant URL to an admin page
-  $target_url = "http://voyant-tools.org";
+  $target_url = "https://voyant-tools.org";
   
   $headers = array("Content-Type:multipart/form-data");
  
