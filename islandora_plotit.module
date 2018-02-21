@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Main hook implementations for islandora_plotit.
@@ -50,7 +51,7 @@ function islandora_plotit_menu() {
 
 
   // 2015-10-07 - XML DB integrated versions
-  // bookmark: main link to Plot-It given a list of bookmark items
+  // Bookmark: main link to Plot-It given a list of bookmark items.
   $items['islandora-bookmark/listid/%/plotit_xmldb'] = array(
     'title' => 'View PlotIt - XML DB',
     'page callback' => 'islandora_plotit_bookmark_plotit_xmldb_page',
@@ -60,7 +61,7 @@ function islandora_plotit_menu() {
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_LOCAL_ACTION,
   );
-  // bookmark: callback from the above menu items that produces the JSON 
+  // Bookmark: callback from the above menu items that produces the JSON.
   $items['islandora-bookmark/listid/%/plotit_xmldb_json'] = array(
     'title' => 'JSON Output for bookmark list %id',
     'title arguments' => array('%id' => 2),
@@ -71,7 +72,7 @@ function islandora_plotit_menu() {
     'file' => 'includes/bookmark-output.inc',
     'type' => MENU_CALLBACK,
   );
-  // collection: callback from the above menu items that produces the JSON 
+  // Collection: callback from the above menu items that produces the JSON.
   $items['islandora-collection/object/%islandora_object/plotit_xmldb_json'] = array(
     'title' => 'JSON Output for collection %id',
     'title arguments' => array('%id' => 2),
@@ -93,18 +94,28 @@ function islandora_plotit_menu() {
   );
 
 
-  // Voyant integration - Fedora Object 
+  // Voyant integration - Fedora Object.
   $items['islandora/object/%islandora_object/voyant'] = array(
     'title' => 'View Voyant',
     'page callback' => 'islandora_plotit_collection_voyant_page',
-    'page arguments' => array(2),
+    'page arguments' => array(2, 3),
     'access callback' => 'islandora_plotit_collection_access',
     'access arguments' => array(2),
     'file' => 'includes/voyant_helpers.inc',
     'type' => MENU_CALLBACK,
   );
-  // Voyant integration 
-  // bookmark: callback from the  
+  // Voyant dtoc integration - Fedora Object.
+  $items['islandora/object/%islandora_object/dtoc'] = array(
+    'title' => 'View DToC',
+    'page callback' => 'islandora_plotit_collection_voyant_page',
+    'page arguments' => array(2, 3),
+    'access callback' => 'islandora_plotit_collection_access',
+    'access arguments' => array(2),
+    'file' => 'includes/voyant_helpers.inc',
+    'type' => MENU_CALLBACK,
+  );
+  // Voyant integration.
+  // Bookmark: callback from the.
   $items['islandora-bookmark/listid/%/voyant'] = array(
     'title' => 'Voyant content delimited by a bookmark list %id',
     'title arguments' => array('%id' => 2),
@@ -119,7 +130,6 @@ function islandora_plotit_menu() {
   return $items;
 }
 
-
 /**
  * Implements hook_cwrc_visualization_info().
  * 
@@ -133,37 +143,42 @@ function islandora_plotit_cwrc_visualization_info() {
   $tools = array();
 
   $tools['plotit-2.0'] = array(
-      'label' => 'PlotIt 2.0',
-      'available cmodels' => array(
-        'islandora:collectionCModel',
-      ),
-      'url pattern' => $base_url.'/islandora/object/%object_pid%/plotit_xmldb',
-      'weight' => 10,
-      'search display' => 'plotit',
-      'search hide facets' => true,
-      'bookmark path' => 'islandora-bookmark/listid/%list_id%/plotit_xmldb_json',
-    
-    );
-
+    'label' => 'PlotIt 2.0',
+    'available cmodels' => array(
+      'islandora:collectionCModel',
+    ),
+    'url pattern' => $base_url . '/islandora/object/%object_pid%/plotit_xmldb',
+    'weight' => 10,
+    'search display' => 'plotit',
+    'search hide facets' => TRUE,
+    'bookmark path' => 'islandora-bookmark/listid/%list_id%/plotit_xmldb_json',
+  );
 
   $tools['voyant'] = array(
-      'label' => 'Voyant',
-      'available cmodels' => array(
-        'islandora:collectionCModel',
-      ),
-      'url pattern' => $base_url.'/islandora/object/%object_pid%/voyant',
-      'weight' => 20,
-      'search display' => 'voyant',
-      'search hide facets' => true,
-      'bookmark path' => 'islandora-bookmark/listid/%list_id%/voyant',
-    
-    );
+    'label' => 'Voyant',
+    'available cmodels' => array(
+      'islandora:collectionCModel',
+    ),
+    'url pattern' => $base_url . '/islandora/object/%object_pid%/voyant',
+    'weight' => 20,
+    'search display' => 'voyant',
+    'search hide facets' => TRUE,
+    'bookmark path' => 'islandora-bookmark/listid/%list_id%/voyant',
+  );
+  $tools['dtoc'] = array(
+    'label' => 'DToC',
+    'available cmodels' => array(
+      'islandora:collectionCModel',
+    ),
+    'url pattern' => $base_url . '/islandora/object/%object_pid%/dtoc',
+    'weight' => 21,
+    'search display' => 'voyant',
+    'search hide facets' => TRUE,
+    'bookmark path' => 'islandora-bookmark/listid/%list_id%/voyant',
+  );
 
   return $tools;
 }
-
-
-
 
 /**
  * Implements hook_islandora_solr_secondary_display().
