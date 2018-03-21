@@ -131,8 +131,21 @@ function islandora_plotit_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function islandora_plotit_menu_alter(&$items) {
+  if (!empty($items['islandora/object/%islandora_object/view/dtoc'])) {
+    $dtoc_item = &$items['islandora/object/%islandora_object/view/dtoc'];
+    $dtoc_item['page callback'] = 'drupal_get_form';
+    $dtoc_item['page arguments'] = array('islandora_plotit_voyant_dtoc_form', 2);
+    $dtoc_item['file'] = 'includes/voyant_dtoc_helpers.inc';
+    $dtoc_item['file path'] = drupal_get_path('module', 'islandora_plotit');
+  }
+}
+
+/**
  * Implements hook_cwrc_visualization_info().
- * 
+ *
  * Does so on behalf of the plotit module, the only visualization tool available
  * as of yet.
  * */

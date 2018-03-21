@@ -132,7 +132,7 @@ function islandora_cwrc_voyant_populate($zipArchive, $filePath, $fedora_object, 
       // Don't use credential cache - we want to change user to anonymous
       // $fedora_object = islandora_object_load($pid);
       // $fedora_object = new FedoraObject($pid, $anon_repository);.
-      $fedora_object = $anon_connection->repository->getObject($pid);;
+      $fedora_object = $anon_connection->repository->getObject($pid);
 
       if ($fedora_object) {
         $member_dir_label = $member_base_label;
@@ -281,7 +281,7 @@ function islandora_plotit_voyant_page(AbstractObject $fedora_object, $pid_array,
     CURLOPT_HTTPHEADER => $headers,
     CURLOPT_POSTFIELDS => $post_fields,
     CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_MAXREDIRS => 0
+    CURLOPT_MAXREDIRS => 0,
   );
 
   $ch = curl_init();
@@ -292,6 +292,12 @@ function islandora_plotit_voyant_page(AbstractObject $fedora_object, $pid_array,
   // especially if an exception occurs
   // Clean up the temp directory where we downloaded the datastreams.
   if (file_exists($file_name_with_full_path)) {
+    // Temporarily save this zipfile in our directory to reuse it later.
+    // $tmp_path = "public://nikathone_tmp/02-2018";
+    // if (file_prepare_directory($tmp_path, FILE_CREATE_DIRECTORY)) {
+    // $tmp_path .= '/' . $zipFile;
+    // file_put_contents($tmp_path, $file_name_with_full_path);
+    // }
     // rmdir($file_name_with_full_path);
     unlink($file_name_with_full_path);
   }
@@ -306,87 +312,6 @@ function islandora_plotit_voyant_page(AbstractObject $fedora_object, $pid_array,
       $redirect_url = preg_replace('/^\./', $target_url, $redirect_url);
     }
 
-    // Parsing the redirect to see if we can extract the corpus and build the curator id.
-    $parsed_url = $input_format == 'dtoc' ? drupal_parse_url($redirect_url) : array();
-    if (!empty($parsed_url['query']['corpus'])) {
-      $redirect_path = $parsed_url['path'];
-      $corpus = $parsed_url['query']['corpus'];
-      $redirect_options = array(
-        'query' => array(),
-        'external' => TRUE,
-      );
-      $redirect_options['query'] += $parsed_url['query'];
-      $redirect_options['query']['curatorId'] = $corpus;
-      // Updating the redirect with new options.
-      $redirect_url = url($redirect_path . 'dtoc/', $redirect_options);
-      // For some reason drupal is adding "%0D" at the end of query values.
-      $redirect_url = str_replace('%0D', '', $redirect_url);
-    }
-
-    drupal_goto($redirect_url);
-  }
-  else {
-    print_r($result);
-  }
-}
-
-/**
- * Function(s) related to viewing collections in DToC Voyant.
- *
- * @param \AbstractObject $fedora_object
- *   The ID of a Islandora collection.
- * @param array $pid_array
- *   The array of PID results.
- */
-function islandora_plotit_voyant_dtoc_page(AbstractObject $fedora_object, array $pid_array) {
-  // Build call to remote Voyant tool.
-  $target_url = "https://voyant-tools.org";
-  $headers = array("Content-Type:multipart/form-data");
-  $file_name = 'regenerations_test.xml';
-  $path = '/var/www/drupal7/sites/default/files/nikathone_tmp/02-2018';
-
-  $post_fields = array('file_contents' => '@' . $path . '/' . $file_name . ';filename=' . $file_name);
-  $options = array(
-    CURLOPT_URL => $target_url,
-    CURLOPT_HEADER => 1,
-    CURLOPT_POST => 1,
-    CURLOPT_TIMEOUT => 120,
-    CURLOPT_HTTPHEADER => $headers,
-    CURLOPT_POSTFIELDS => $post_fields,
-    CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_MAXREDIRS => 0,
-  );
-
-  $ch = curl_init();
-  curl_setopt_array($ch, $options);
-  $result = curl_exec($ch);
-  // $error = curl_error($ch);
-  // $info = curl_getinfo($ch);
-  curl_close($ch);
-
-  preg_match("/Location: ([h.].*)/", $result, $matches);
-  if ($matches[1]) {
-    $redirect_url = $matches[1];
-    if (substr($redirect_url, 0, 1) === '.') {
-      $redirect_url = preg_replace('/^\./', $target_url, $redirect_url);
-    }
-
-    // Parsing the redirect to see if we can extract the corpus and build the curator id.
-    $parsed_url = drupal_parse_url($redirect_url);
-    if (!empty($parsed_url['query']['corpus'])) {
-      $redirect_path = $parsed_url['path'];
-      $corpus = $parsed_url['query']['corpus'];
-      $redirect_options = array(
-        'query' => array(),
-        'external' => TRUE,
-      );
-      $redirect_options['query'] += $parsed_url['query'];
-      $redirect_options['query']['curatorId'] = $corpus;
-      // Updating the redirect with new options.
-      $redirect_url = url($redirect_path . 'dtoc/', $redirect_options);
-      // For some reason drupal is adding "%0D" at the end of query values.
-      $redirect_url = str_replace('%0D', '', $redirect_url);
-    }
     drupal_goto($redirect_url);
   }
   else {
