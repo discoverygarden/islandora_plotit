@@ -214,7 +214,7 @@ function islandora_plotit_voyant_dtoc_get_corpus_metadata($dtoc_input, array $us
   $dtoc_input = str_replace('.xml%250A', '.xml%0A', $dtoc_input);
   // Initializing default parameters.
   $parameters = array(
-    'inputFormat' => 'dtoc',
+//    'inputFormat' => 'dtoc', - to let dtoc auto detect
     'palette' => 'default',
     'inkeTags' => 'false',
     'suppressTools' => 'false',
