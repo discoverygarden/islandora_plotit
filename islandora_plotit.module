@@ -179,7 +179,7 @@ function islandora_plotit_cwrc_visualization_info() {
     'bookmark path' => 'islandora-bookmark/listid/%list_id%/voyant',
   );
   $tools['dtoc'] = array(
-    'label' => 'DToC',
+    'label' => t('DToC (for XML documents)'),
     'available cmodels' => array(
       'islandora:collectionCModel',
     ),

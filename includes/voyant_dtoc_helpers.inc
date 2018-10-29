@@ -11,6 +11,8 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
   $corpus_title = $islandora_object->label;
   $form['#islandora_object'] = $islandora_object;
   $form['#attached']['js'] = array($path . '/js/voyant_dtoc.js');
+  $form['#attached']['css'] = array($path . '/css/voyant_dtoc.css');
+  $form['#attributes']['class'][] = 'voyant-dtoc-form';
   $page_step = !empty($form_state['page_step']) ? $form_state['page_step'] : 'form';
   $error_message = '';
 
@@ -22,11 +24,14 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
     $xpath = !empty($dtoc_parameters['xpath']) ? $dtoc_parameters['xpath'] : array();
     $user_options = _islandora_plotit_voyant_dtoc_gather_user_options($corpus, $xpath);
 
-    if ($pid == 'all') {
+    if ($pid === 'all') {
       $files = _islandora_plotit_voyant_dtoc_get_collection_files($islandora_object);
       if ($files) {
+        $default_file = $files;
+        $default_file = reset($default_file);
+        $input_format = $default_file['schema_id'] == 'tei' ? 'dtoc' : '';
         $input = _islandora_plotit_voyant_dtoc_get_collection_input($files);
-        $corpus_metadata = islandora_plotit_voyant_dtoc_get_corpus_metadata($input);
+        $corpus_metadata = islandora_plotit_voyant_dtoc_get_corpus_metadata($input, $user_options, $input_format);
         _islandora_plotit_voyant_dtoc_delete_datastream_files($files);
       }
       else {
@@ -35,7 +40,7 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
     }
     else {
       $selected_doc_pid = !empty($dtoc_parameters['selected_document']) ? $dtoc_parameters['selected_document']->id : '';
-      $collection_element = $selected_doc_pid == $pid ?
+      $collection_element = $selected_doc_pid === $pid ?
         $dtoc_parameters['selected_document'] :
         islandora_object_load($pid);
       $schema = islandora_cwrc_writer_get_document_schema_object($collection_element);
@@ -53,11 +58,12 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
       $supported_mappings = ['tei', 'orlando'];
       if (in_array($schema_mapping, $supported_mappings) && ($datastream = $collection_element->getDatastream('CWRC'))) {
         $file = _islandora_plotit_voyant_dtoc_get_datastream_files($datastream, $schema_mapping, $collection_pid, $pid);
-        $corpus_metadata = islandora_plotit_voyant_dtoc_get_corpus_metadata($file['url'], $user_options);
+        $input_format = $schema_mapping === 'tei' ? 'dtoc' : '';
+        $corpus_metadata = islandora_plotit_voyant_dtoc_get_corpus_metadata($file['url'], $user_options, $input_format);
         file_unmanaged_delete($file['uri']);
       }
       else {
-        $error_message = t("The Selected document schema mapping@mapping is not supported or no datastream was found!", array(
+        $error_message = t('The Selected document schema mapping@mapping is not supported or no datastream was found!', array(
           '@mapping' => $schema_mapping ? '(' . $schema_mapping . ')' : '',
         ));
       }
@@ -70,10 +76,11 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
   }
 
   $current_doc = !empty($form_state['values']['document']) ? $form_state['values']['document'] : '';
+  $document_options = _islandora_plotit_voyant_dtoc_get_collection_pid_options($islandora_object);
   $form['document'] = [
     '#type' => 'select',
     '#title' => t('Document'),
-    '#options' => _islandora_plotit_voyant_dtoc_get_collection_pid_options($islandora_object),
+    '#options' => $document_options,
     '#default_value' => $current_doc,
     '#required' => TRUE,
   ];
@@ -132,9 +139,23 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
   );
 
   $form['reveal'] = array(
-      '#type' => 'submit',
-      '#value' => t('Reveal'),
+    '#type' => 'submit',
+    '#value' => t('Reveal'),
+  );
+
+  if (count($document_options) === 1) {
+    $form['reveal']['#attributes']['disabled'] = 'disabled';
+    $form['#attributes']['class'][] = 'empty-collection';
+    $form['empty_collection'] = array(
+      '#type' => 'html_tag',
+      '#tag' => 'div',
+      '#attributes' => array(
+        'class' => array('empty-collection--message'),
+      ),
+      '#value' => t('<p>No DToC view is available because this collection contains no XML documents</p>'),
+      '#weight' => -99,
     );
+  }
 
   $form['voyant_tools_dtoc'] = array(
     '#type' => 'container',
@@ -142,7 +163,7 @@ function islandora_plotit_voyant_dtoc_form($form, $form_state, $islandora_object
       'id' => 'voyant-tools-dtoc-wrapper',
       'class' => array('voyant-tools-dtoc-wrapper'),
     ),
-    '#access' => $page_step == 'render',
+    '#access' => $page_step === 'render',
   );
 
   if (isset($corpus_metadata['corpus']['metadata']['id'])) {
@@ -190,7 +211,7 @@ function islandora_plotit_voyant_dtoc_form_validate($form, &$form_state) {
     }
     // Validate xpath expressions.
   }
-  elseif ($values['document'] != 'all') {
+  elseif ($values['document'] !== 'all') {
     form_set_error('document', t('We were unable to load the selected document data! Please try another document.'));
   }
 }
@@ -207,20 +228,23 @@ function islandora_plotit_voyant_dtoc_form_submit($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
 }
 
-function islandora_plotit_voyant_dtoc_get_corpus_metadata($dtoc_input, array $user_options = array()) {
+function islandora_plotit_voyant_dtoc_get_corpus_metadata($dtoc_input, array $user_options = array(), $input_format = '') {
   $corpus_metadata = array();
   $target_url = 'https://voyant-tools.org/trombone';
   $dtoc_input = str_replace('%3A', ':', $dtoc_input);
   $dtoc_input = str_replace('.xml%250A', '.xml%0A', $dtoc_input);
   // Initializing default parameters.
   $parameters = array(
-//    'inputFormat' => 'dtoc', - to let dtoc auto detect
     'palette' => 'default',
     'inkeTags' => 'false',
     'suppressTools' => 'false',
     'input' => $dtoc_input,
     'tool' => 'corpus.CorpusMetadata',
   );
+
+  if ($input_format) {
+    $parameters['inputFormat'] = $input_format;
+  }
 
   foreach ($user_options as $key => $option) {
     $parameters[$key] = $option;
@@ -239,12 +263,13 @@ function islandora_plotit_voyant_dtoc_get_corpus_metadata($dtoc_input, array $us
   );
   $result = drupal_http_request($url, $request_options);
   if ($result->code != '200') {
+    $code = $result->code;
     $message = '<p>Error code: %code<br>Error message: %error<br>Query: %query</p><p>%data</p>';
     $variables = array(
-      '%code' => $result->code,
+      '%code' => $code,
       '%error' => $result->error,
       '%query' => $data,
-      '%data' => $result->data,
+      '%data' => $code != -1 ? $result->data : '<none>',
     );
     watchdog(
       'islandora_plotit',
@@ -330,7 +355,7 @@ function _islandora_plotit_voyant_dtoc_get_collection_pid_options(AbstractObject
 
     foreach ($pids as $pid) {
       $collection_element = islandora_object_load($pid);
-      if ($collection_element) {
+      if ($collection_element && _islandora_plotit_voyant_dtoc_has_cwrc_document_cmodel($collection_element)) {
         $options[$pid] = $collection_element->label;
       }
     }
@@ -348,6 +373,7 @@ function _islandora_plotit_voyant_dtoc_get_datastream_files($datastream, $schema
     ':' => '_',
   );
   $random_string = substr(md5(rand()), 0, 7);
+  $schema_mapping_id = $schema_mapping;
 
   $schema_mapping = drupal_clean_css_identifier(strtolower($schema_mapping), $filters);
   $datastream_id = drupal_clean_css_identifier(strtolower($datastream->id), $filters);
@@ -365,6 +391,7 @@ function _islandora_plotit_voyant_dtoc_get_datastream_files($datastream, $schema
   return array(
     'uri' => $local_uri,
     'url' => file_create_url($local_uri),
+    'schema_id' => $schema_mapping_id,
   );
 }
 
@@ -409,4 +436,18 @@ function _islandora_plotit_voyant_dtoc_gather_user_options(array $corpus = array
   }
 
   return $options;
+}
+
+/**
+ * Checks if a given object has CWRC document CModel.
+ *
+ * @param \FedoraObject $object
+ *   The object.
+ *
+ * @return bool
+ *   The check.
+ */
+function _islandora_plotit_voyant_dtoc_has_cwrc_document_cmodel($object) {
+  $models = !empty($object->models) ? $object->models : array();
+  return in_array('cwrc:documentCModel', $models, TRUE);
 }

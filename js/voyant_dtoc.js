@@ -1,5 +1,5 @@
 (function ($) {
-  Drupal.behaviors.ViyantDtocFormSingleSubmit = {
+  Drupal.behaviors.VoyantDtocFormSingleSubmit = {
     attach: function attach() {
       function onFormSubmit(e) {
         var $form = $(e.currentTarget);
