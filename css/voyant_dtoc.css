@@ -1,0 +1,48 @@
+.voyant-dtoc-form.empty-collection {
+  position: relative;
+}
+.voyant-dtoc-form.empty-collection:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  z-index: 998;
+  width: 100%;
+  right: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  cursor: default;
+  border: 1px solid transparent;
+}
+
+.voyant-dtoc-form .empty-collection--message {
+  display: none;
+  position: absolute;
+  width: 250px;
+  max-width: 100%;
+  height: 125px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  padding: 0 0 0 0;
+  border: 1px solid #CCD1D3;
+  background-color: #fff;
+  z-index: 999;
+  box-shadow: rgb(204, 209, 211) 0 0 6px;
+}
+
+.voyant-dtoc-form.empty-collection .empty-collection--message {
+  display: block;
+}
+.voyant-dtoc-form.empty-collection .empty-collection--message p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin: 0;
+  padding: 10px;
+  width: 100%;
+}
